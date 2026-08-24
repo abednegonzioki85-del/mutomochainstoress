@@ -277,24 +277,6 @@
         tr:last-child td { border-bottom: none; }
         .empty-row td { text-align: center; padding: 28px 10px; color: #94a3b8; font-style: italic; }
 
-        .self-stock-section {
-            background: #f8fafc;
-            border-radius: 10px;
-            padding: 14px 16px;
-            border: 1px solid #e2e8f0;
-            margin-top: 8px;
-        }
-        .self-stock-section .section-label {
-            font-weight: 600;
-            color: #475569;
-            font-size: 0.75rem;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .self-stock-section .section-label i { color: #e67e22; }
-
         .progress-log {
             border: 1px solid #e2e8f0;
             border-radius: 10px;
@@ -311,40 +293,6 @@
             font-size: 0.78rem;
         }
         .log-item:last-child { border-bottom: none; }
-
-        .product-management {
-            background: #f8fafc;
-            border-radius: 10px;
-            padding: 14px 16px;
-            border: 1px solid #e2e8f0;
-            margin-top: 8px;
-        }
-        .product-management .section-label {
-            font-weight: 600;
-            color: #475569;
-            font-size: 0.75rem;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .product-management .section-label i { color: #27ae60; }
-        .product-list {
-            max-height: 130px;
-            overflow-y: auto;
-            margin-top: 6px;
-        }
-        .product-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 5px 8px;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 0.8rem;
-        }
-        .product-item:last-child { border-bottom: none; }
-        .product-item .product-name { font-weight: 500; color: #334155; }
-        .product-item .product-price { font-weight: 600; color: #1a5276; }
 
         .business-details-section {
             background: #f8fafc;
@@ -524,8 +472,8 @@
         <div class="stats-row">
             <div class="stat-card"><div class="stat-icon orange"><i class="fas fa-shopping-cart"></i></div><div class="stat-number" id="statTotalSales">0</div><div class="stat-label">My Sales</div></div>
             <div class="stat-card"><div class="stat-icon green"><i class="fas fa-box"></i></div><div class="stat-number" id="statTotalQty">0</div><div class="stat-label">My Quantity</div></div>
-            <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-trophy"></i></div><div class="stat-number" id="statRank">#1</div><div class="stat-label">My Rank</div></div>
             <div class="stat-card"><div class="stat-icon purple"><i class="fas fa-undo-alt"></i></div><div class="stat-number" id="statReturns">0</div><div class="stat-label">My Returns</div></div>
+            <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-trophy"></i></div><div class="stat-number" id="statRank">#1</div><div class="stat-label">My Rank</div></div>
             <div class="stat-card"><div class="stat-icon red"><i class="fas fa-coins"></i></div><div class="stat-number" id="statRevenue">KSh 0</div><div class="stat-label">My Revenue</div></div>
         </div>
 
@@ -573,7 +521,7 @@
                 <div style="background:#f0fdf4; border:2px solid #27ae60; border-radius:12px; padding:16px; text-align:center; margin-bottom:12px;">
                     <i class="fas fa-user-tie" style="font-size:2rem; color:#27ae60; display:block; margin-bottom:6px;"></i>
                     <h3 style="color:#1e8449; font-size:1rem;">Welcome, Sales Team! 👋</h3>
-                    <p style="color:#64748b; font-size:0.8rem; margin-top:4px;">Track your sales and stock</p>
+                    <p style="color:#64748b; font-size:0.8rem; margin-top:4px;">Record your sales and returns</p>
                 </div>
 
                 <!-- Sales Stats -->
@@ -583,8 +531,8 @@
                         <div style="font-size:1.2rem; font-weight:700; color:#27ae60;" id="todaySales">KSh 0</div>
                     </div>
                     <div style="background:#f8fafc; border-radius:10px; padding:12px; text-align:center; border:1px solid #e2e8f0;">
-                        <div style="font-size:0.6rem; color:#64748b; text-transform:uppercase;">This Week</div>
-                        <div style="font-size:1.2rem; font-weight:700; color:#2e86c1;" id="weekSales">KSh 0</div>
+                        <div style="font-size:0.6rem; color:#64748b; text-transform:uppercase;">Today's Returns</div>
+                        <div style="font-size:1.2rem; font-weight:700; color:#e67e22;" id="todayReturns">0</div>
                     </div>
                 </div>
 
@@ -593,7 +541,7 @@
                     <div style="font-size:0.7rem; font-weight:600; color:#d35400; display:flex; align-items:center; gap:6px;">
                         <i class="fas fa-lightbulb"></i> Sales Tip
                     </div>
-                    <p style="font-size:0.75rem; color:#64748b; margin-top:4px;">Add more products to increase your sales! 🚀</p>
+                    <p style="font-size:0.75rem; color:#64748b; margin-top:4px;">Record your sales daily to track performance! 🚀</p>
                 </div>
 
                 <div class="business-details-section">
@@ -607,25 +555,6 @@
                     <button class="btn btn-sm btn-blue" id="saveBusinessDetailsBtn" style="width:100%; justify-content:center; margin-top:4px;">
                         <i class="fas fa-save"></i> Save Business Details
                     </button>
-                </div>
-
-                <div class="product-management">
-                    <div class="section-label"><i class="fas fa-boxes"></i> View Products</div>
-                    <div class="product-list" id="productListContainer"></div>
-                    <div style="font-size:0.6rem; color:#94a3b8; text-align:center; margin-top:6px;">
-                        <i class="fas fa-info-circle"></i> Products managed by Admin
-                    </div>
-                </div>
-
-                <div class="self-stock-section">
-                    <div class="section-label"><i class="fas fa-hand-holding"></i> Record Your Stock Action</div>
-                    <div style="display:flex; flex-wrap:wrap; gap:6px;">
-                        <div class="input-field" style="flex:1.2; background:white;"><i class="fas fa-user"></i><select id="selfEmployeeSelect"><option value="">Select Your Name</option></select></div>
-                        <div class="input-field" style="flex:1.2; background:white;"><i class="fas fa-box"></i><select id="selfItemSelect"><option value="">Select Product</option></select></div>
-                        <div class="input-field" style="flex:0.6; background:white;"><i class="fas fa-hashtag"></i><input type="number" id="selfActionQty" value="1" min="1" step="1"></div>
-                        <button class="btn btn-orange btn-sm" id="selfTookBtn"><i class="fas fa-arrow-right"></i> Took</button>
-                        <button class="btn btn-green btn-sm" id="selfReturnedBtn"><i class="fas fa-arrow-left"></i> Return</button>
-                    </div>
                 </div>
 
                 <div style="margin-top:8px;">
@@ -708,32 +637,17 @@
 
             // ===== DATA =====
             const products = ['Laptop', 'Phone', 'Tablet', 'Headphones', 'Charger'];
-            const salesPersons = ['Brian', 'Cathy'];
-            const routes = ['CBD', 'Westlands'];
 
             let salesData = [];
             let activityLog = [];
 
-            // Populate dropdowns
+            // Populate product dropdown
             const productSelect = document.getElementById('productSelect');
-            const selfItemSelect = document.getElementById('selfItemSelect');
             products.forEach(p => {
                 const o1 = document.createElement('option');
                 o1.value = p;
                 o1.textContent = p;
                 productSelect.appendChild(o1);
-                const o2 = document.createElement('option');
-                o2.value = p;
-                o2.textContent = p;
-                selfItemSelect.appendChild(o2);
-            });
-
-            const selfEmpSelect = document.getElementById('selfEmployeeSelect');
-            salesPersons.forEach(p => {
-                const o = document.createElement('option');
-                o.value = p;
-                o.textContent = p;
-                selfEmpSelect.appendChild(o);
             });
 
             // Stats
@@ -751,7 +665,10 @@
                 document.getElementById('statRevenue').textContent = 'KSh ' + totalRevenue.toFixed(2);
                 document.getElementById('logCount').textContent = activityLog.length;
                 document.getElementById('todaySales').textContent = 'KSh ' + totalRevenue.toFixed(2);
-                document.getElementById('weekSales').textContent = 'KSh ' + (totalRevenue * 2.5).toFixed(2);
+                document.getElementById('todayReturns').textContent = totalReturns;
+                
+                // Update rank (based on sales count)
+                document.getElementById('statRank').textContent = totalSales > 5 ? '#1' : totalSales > 2 ? '#2' : '#3';
             }
 
             function renderTable() {
@@ -780,20 +697,6 @@
                 updateStats();
             }
 
-            function renderProducts() {
-                const container = document.getElementById('productListContainer');
-                if (products.length === 0) {
-                    container.innerHTML = '<div style="padding:8px;text-align:center;color:#94a3b8;font-size:0.75rem;">No products</div>';
-                    return;
-                }
-                container.innerHTML = products.map(p => `
-                    <div class="product-item">
-                        <span class="product-name"><i class="fas fa-tag" style="color:#27ae60;font-size:0.6rem;"></i> ${p}</span>
-                        <span class="product-price">KSh ${(Math.random() * 500 + 100).toFixed(2)}</span>
-                    </div>
-                `).join('');
-            }
-
             function addLog(message) {
                 const time = new Date().toLocaleTimeString();
                 activityLog.unshift({ message, time });
@@ -807,197 +710,4 @@
                         <span>${log.message}</span>
                         <span style="color:#94a3b8;font-size:0.65rem;">${log.time}</span>
                     </div>
-                `).join('');
-                document.getElementById('logCount').textContent = activityLog.length;
-            }
-
-            // Add Row
-            document.getElementById('addRowBtn').addEventListener('click', function() {
-                const salesPerson = document.getElementById('salesPerson').value || 'Brian';
-                const route = document.getElementById('route').value || 'CBD';
-                const date = document.getElementById('date').value || '2026-08-24';
-                const product = document.getElementById('productSelect').value;
-                const qty = parseInt(document.getElementById('quantity').value) || 0;
-                const ret = parseInt(document.getElementById('returnSold').value) || 0;
-                const price = Math.random() * 500 + 100;
-                const total = qty * price;
-
-                if (qty <= 0) {
-                    alert('⚠️ Quantity must be greater than 0');
-                    return;
-                }
-
-                salesData.push({ salesPerson, route, date, product, qty, ret, total });
-                renderTable();
-                addLog(`📦 ${salesPerson} added ${qty} × ${product} (KSh ${total.toFixed(2)})`);
-                updateChart();
-            });
-
-            // Delete Row
-            window.deleteRow = function(index) {
-                if (confirm('🗑️ Delete this record?')) {
-                    const row = salesData[index];
-                    salesData.splice(index, 1);
-                    renderTable();
-                    addLog(`🗑️ Deleted record for ${row.salesPerson} - ${row.product}`);
-                    updateChart();
-                }
-            };
-
-            // Edit Row
-            window.editRow = function(index) {
-                const row = salesData[index];
-                document.getElementById('salesPerson').value = row.salesPerson;
-                document.getElementById('route').value = row.route;
-                document.getElementById('date').value = row.date;
-                document.getElementById('productSelect').value = row.product;
-                document.getElementById('quantity').value = row.qty;
-                document.getElementById('returnSold').value = row.ret;
-                salesData.splice(index, 1);
-                renderTable();
-                addLog(`✏️ Editing record for ${row.salesPerson} - ${row.product}`);
-                updateChart();
-            };
-
-            // Clear All
-            document.getElementById('clearAllBtn').addEventListener('click', function() {
-                if (confirm('⚠️ Clear all sales records?')) {
-                    salesData = [];
-                    renderTable();
-                    addLog('🗑️ All records cleared');
-                    updateChart();
-                }
-            });
-
-            // Sample Data
-            document.getElementById('sampleDataBtn').addEventListener('click', function() {
-                const sampleProducts = ['Laptop', 'Phone', 'Tablet', 'Headphones'];
-                for (let i = 0; i < 5; i++) {
-                    const p = sampleProducts[i % sampleProducts.length];
-                    const price = Math.random() * 500 + 100;
-                    salesData.push({
-                        salesPerson: 'Brian',
-                        route: 'CBD',
-                        date: '2026-08-24',
-                        product: p,
-                        qty: Math.floor(Math.random() * 15) + 1,
-                        ret: Math.floor(Math.random() * 2),
-                        total: (Math.floor(Math.random() * 15) + 1) * price
-                    });
-                }
-                renderTable();
-                addLog('📊 Sample data loaded');
-                updateChart();
-            });
-
-            // Receipt
-            document.getElementById('generateReceiptBtn').addEventListener('click', function() {
-                if (salesData.length === 0) {
-                    alert('⚠️ No sales records to generate receipt!');
-                    return;
-                }
-                const receiptBody = document.getElementById('receiptBody');
-                let html = '<div class="receipt-row" style="font-weight:600;color:#475569;border-bottom:2px solid #e2e8f0;"><span>Item</span><span>Qty</span><span>Total</span></div>';
-                let grandTotal = 0;
-                salesData.forEach(row => {
-                    const total = parseFloat(row.total).toFixed(2);
-                    grandTotal += parseFloat(total);
-                    html += `<div class="receipt-row"><span>${row.product}</span><span>${row.qty}</span><span>KSh ${total}</span></div>`;
-                });
-                html += `<div class="receipt-row total"><span>TOTAL</span><span></span><span>KSh ${grandTotal.toFixed(2)}</span></div>`;
-                receiptBody.innerHTML = html;
-                document.getElementById('receiptNumber').textContent = String(Math.floor(Math.random() * 9999) + 1000).padStart(4, '0');
-                document.getElementById('receiptDate').textContent = new Date().toLocaleDateString();
-                document.getElementById('receiptModal').classList.add('active');
-            });
-
-            document.getElementById('closeReceiptBtn').addEventListener('click', function() {
-                document.getElementById('receiptModal').classList.remove('active');
-            });
-
-            // Self Stock Actions
-            document.getElementById('selfTookBtn').addEventListener('click', function() {
-                const emp = document.getElementById('selfEmployeeSelect').value;
-                const item = document.getElementById('selfItemSelect').value;
-                const qty = document.getElementById('selfActionQty').value;
-                if (!emp || !item) {
-                    alert('⚠️ Please select your name and product');
-                    return;
-                }
-                addLog(`📤 ${emp} took ${qty} × ${item} from stock`);
-                alert(`✅ ${emp} took ${qty} × ${item}`);
-            });
-
-            document.getElementById('selfReturnedBtn').addEventListener('click', function() {
-                const emp = document.getElementById('selfEmployeeSelect').value;
-                const item = document.getElementById('selfItemSelect').value;
-                const qty = document.getElementById('selfActionQty').value;
-                if (!emp || !item) {
-                    alert('⚠️ Please select your name and product');
-                    return;
-                }
-                addLog(`📥 ${emp} returned ${qty} × ${item} to stock`);
-                alert(`✅ ${emp} returned ${qty} × ${item}`);
-            });
-
-            // Save Business Details
-            document.getElementById('saveBusinessDetailsBtn').addEventListener('click', function() {
-                const name = document.getElementById('businessName').value;
-                const address = document.getElementById('businessAddress').value;
-                const phone = document.getElementById('businessPhone').value;
-                const email = document.getElementById('businessEmail').value;
-                document.getElementById('receiptBusinessName').textContent = name;
-                document.getElementById('receiptBusinessAddress').textContent = '📍 ' + address;
-                document.getElementById('receiptBusinessPhone').textContent = '📞 ' + phone;
-                document.getElementById('receiptBusinessEmail').textContent = '✉️ ' + email;
-                addLog('💾 Business details saved');
-                alert('✅ Business details saved successfully!');
-            });
-
-            // Chart
-            let chartInstance = null;
-            function updateChart() {
-                const ctx = document.getElementById('salesChart').getContext('2d');
-                if (chartInstance) { chartInstance.destroy(); }
-                const productNames = [...new Set(salesData.map(r => r.product))];
-                const productTotals = productNames.map(p => {
-                    return salesData.filter(r => r.product === p).reduce((sum, r) => sum + parseFloat(r.total), 0);
-                });
-                chartInstance = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: productNames.length ? productNames : ['No Data'],
-                        datasets: [{
-                            label: 'My Sales (KSh)',
-                            data: productNames.length ? productTotals : [0],
-                            backgroundColor: ['#27ae60', '#2ecc71', '#1abc9c', '#16a085', '#2e86c1'],
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: { callback: function(value) { return 'KSh ' + value.toFixed(0); } }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // ===== INIT =====
-            renderTable();
-            renderProducts();
-            updateChart();
-            addLog('👋 Welcome to Sales Dashboard! Start adding your sales.');
-
-            console.log('✅ Sales Dashboard loaded');
-
-        })();
-    </script>
-
-</body>
-</html>
+               
