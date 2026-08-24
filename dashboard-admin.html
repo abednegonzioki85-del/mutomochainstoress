@@ -1,13 +1,458 @@
-<script src="js/admin.js"></script>
-// ===== LOGOUT - CLEAR SESSION =====
-document.getElementById('adminLogout').addEventListener('click', function(e) {
-    e.preventDefault();
-    if (confirm('🚪 Are you sure you want to logout?')) {
-        // Clear ALL session storage
-        sessionStorage.clear();
-        // Clear local storage
-        localStorage.removeItem('mutomo_remember_username');
-        // Redirect to login
-        window.location.href = 'index.html';
-    }
-});
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mutomo Chain Stores · Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            background: #0f1724;
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100%;
+            background: rgba(255,255,255,0.03);
+            border-right: 1px solid rgba(255,255,255,0.06);
+            padding: 24px 16px;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        .sidebar .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 20px;
+        }
+        .sidebar .logo .icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2979ff, #00c853);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .sidebar .logo h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .sidebar .logo h2 small {
+            display: block;
+            font-size: 0.55rem;
+            font-weight: 400;
+            color: rgba(255,255,255,0.3);
+        }
+        .sidebar .menu-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.2);
+            padding: 12px 8px 6px;
+            font-weight: 600;
+        }
+        .sidebar .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            color: rgba(255,255,255,0.4);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .sidebar .menu-item:hover {
+            background: rgba(255,255,255,0.04);
+            color: #fff;
+        }
+        .sidebar .menu-item.active {
+            background: rgba(41, 121, 255, 0.15);
+            color: #2979ff;
+            border: 1px solid rgba(41, 121, 255, 0.2);
+        }
+        .sidebar .menu-item i { width: 20px; font-size: 1rem; }
+        .sidebar .menu-item .badge {
+            margin-left: auto;
+            background: #2979ff;
+            color: #fff;
+            font-size: 0.55rem;
+            padding: 2px 10px;
+            border-radius: 100px;
+        }
+        .sidebar .logout-btn {
+            margin-top: 30px;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,0,0,0.2);
+            background: rgba(255,0,0,0.05);
+            color: rgba(255,255,255,0.4);
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .sidebar .logout-btn:hover {
+            background: rgba(255,0,0,0.1);
+            color: #ff4444;
+            border-color: rgba(255,0,0,0.3);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main {
+            margin-left: 240px;
+            padding: 24px 32px;
+        }
+
+        /* ===== TOP BAR ===== */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 24px;
+        }
+        .topbar h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+        .topbar h1 span {
+            color: rgba(255,255,255,0.3);
+            font-weight: 400;
+        }
+        .topbar .user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .topbar .user .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2979ff, #00c853);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        .topbar .user .info .name { font-weight: 600; font-size: 0.9rem; }
+        .topbar .user .info .role { font-size: 0.65rem; color: rgba(255,255,255,0.3); }
+
+        /* ===== STATS ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 20px 24px;
+        }
+        .stat-card .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 0.5px;
+        }
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-top: 4px;
+            background: linear-gradient(135deg, #2979ff, #00c853);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-card .change {
+            font-size: 0.7rem;
+            color: #00c853;
+            margin-top: 4px;
+        }
+
+        /* ===== ADMIN GRID ===== */
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        .card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 24px;
+        }
+        .card .card-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card .card-title i { color: #2979ff; }
+
+        /* ===== EMPLOYEE TABLE ===== */
+        .employee-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .employee-row:last-child { border-bottom: none; }
+        .employee-row .info { display: flex; align-items: center; gap: 10px; }
+        .employee-row .info .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(41,121,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #2979ff;
+        }
+        .employee-row .info .name { font-weight: 500; font-size: 0.85rem; }
+        .employee-row .info .role { font-size: 0.65rem; color: rgba(255,255,255,0.3); }
+        .employee-row .status {
+            font-size: 0.6rem;
+            padding: 3px 12px;
+            border-radius: 100px;
+            background: rgba(0,200,83,0.15);
+            color: #00c853;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-blue { background: #2979ff; color: #fff; }
+        .btn-blue:hover { background: #0d47a1; }
+        .btn-green { background: #00c853; color: #fff; }
+        .btn-green:hover { background: #009624; }
+        .btn-orange { background: #ff6d00; color: #fff; }
+        .btn-orange:hover { background: #e65100; }
+        .btn-red { background: #dc3545; color: #fff; }
+        .btn-red:hover { background: #c82333; }
+        .btn-sm { padding: 5px 12px; font-size: 0.7rem; }
+        .btn-block { width: 100%; }
+
+        .admin-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .admin-controls .btn { justify-content: center; display: flex; align-items: center; gap: 6px; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main { margin-left: 0; padding: 16px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .admin-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 500px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .admin-controls { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <div class="sidebar">
+        <div class="logo">
+            <div class="icon"><i class="fas fa-store"></i></div>
+            <h2>Mutomo Chain <small>Admin Panel</small></h2>
+        </div>
+        <div class="menu-label">Main Menu</div>
+        <button class="menu-item active"><i class="fas fa-chart-pie"></i> Dashboard</button>
+        <button class="menu-item"><i class="fas fa-users"></i> Employees <span class="badge">12</span></button>
+        <button class="menu-item"><i class="fas fa-boxes"></i> Inventory</button>
+        <button class="menu-item"><i class="fas fa-shopping-cart"></i> Sales</button>
+        <button class="menu-item"><i class="fas fa-file-invoice"></i> Reports</button>
+        <button class="menu-item"><i class="fas fa-cog"></i> Settings</button>
+        <button class="logout-btn" id="adminLogout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <h1>Dashboard <span>| Admin Overview</span></h1>
+            <div class="user">
+                <div class="info">
+                    <div class="name" id="adminName">James</div>
+                    <div class="role">🛡️ Administrator</div>
+                </div>
+                <div class="avatar">J</div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">Total Revenue</div>
+                <div class="value">KSh 124,580</div>
+                <div class="change"><i class="fas fa-arrow-up"></i> +12.5%</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Total Sales</div>
+                <div class="value">2,847</div>
+                <div class="change"><i class="fas fa-arrow-up"></i> +8.2%</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Employees</div>
+                <div class="value">12</div>
+                <div class="change"><i class="fas fa-user-plus"></i> +2 this month</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Returns</div>
+                <div class="value">43</div>
+                <div class="change" style="color:#ff6d00;"><i class="fas fa-arrow-down"></i> -3.1%</div>
+            </div>
+        </div>
+
+        <!-- Admin Grid -->
+        <div class="admin-grid">
+            <!-- Employees -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-users"></i> Employees <span style="font-size:0.7rem;color:rgba(255,255,255,0.3);margin-left:auto;">Manage</span></div>
+                <div class="employee-row">
+                    <div class="info"><div class="avatar">JD</div><div><div class="name">James Doe</div><div class="role">Administrator</div></div></div>
+                    <span class="status">Active</span>
+                </div>
+                <div class="employee-row">
+                    <div class="info"><div class="avatar">AS</div><div><div class="name">Alice Smith</div><div class="role">Sales Manager</div></div></div>
+                    <span class="status">Active</span>
+                </div>
+                <div class="employee-row">
+                    <div class="info"><div class="avatar">BK</div><div><div class="name">Brian Kip</div><div class="role">Sales Person</div></div></div>
+                    <span class="status" style="background:rgba(255,215,0,0.15);color:#ffd700;">On Leave</span>
+                </div>
+                <div class="employee-row">
+                    <div class="info"><div class="avatar">CM</div><div><div class="name">Cathy Muthoni</div><div class="role">Sales Person</div></div></div>
+                    <span class="status">Active</span>
+                </div>
+                <button class="btn btn-blue btn-block" style="margin-top:12px;"><i class="fas fa-user-plus"></i> Add Employee</button>
+            </div>
+
+            <!-- Admin Controls -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-crown" style="color:#ffd700;"></i> Admin Controls</div>
+                <div class="admin-controls">
+                    <button class="btn btn-blue"><i class="fas fa-user-cog"></i> Manage Users</button>
+                    <button class="btn btn-green"><i class="fas fa-file-export"></i> Export Data</button>
+                    <button class="btn btn-orange"><i class="fas fa-chart-line"></i> Reports</button>
+                    <button class="btn btn-red"><i class="fas fa-database"></i> Backup</button>
+                </div>
+                <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);">
+                    <div style="font-size:0.75rem;color:rgba(255,255,255,0.3);">System Status</div>
+                    <div style="display:flex;gap:12px;margin-top:6px;flex-wrap:wrap;">
+                        <span style="font-size:0.65rem;color:#00c853;"><i class="fas fa-circle"></i> Database: Online</span>
+                        <span style="font-size:0.65rem;color:#00c853;"><i class="fas fa-circle"></i> Server: Running</span>
+                        <span style="font-size:0.65rem;color:#ffd700;"><i class="fas fa-circle"></i> Backup: 2hrs ago</span>
+                    </div>
+                </div>
+                <div style="margin-top:12px;padding:12px;background:rgba(41,121,255,0.05);border-radius:8px;border:1px solid rgba(41,121,255,0.1);">
+                    <div style="font-size:0.7rem;color:rgba(255,255,255,0.4);">📊 Today's Activity</div>
+                    <div style="font-size:0.75rem;margin-top:4px;color:#2979ff;">24 sales recorded · 3 new customers</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CHECK SESSION - Redirect if not logged in
+        // ============================================
+        const user = sessionStorage.getItem('currentUser');
+        if (!user) {
+            window.location.href = 'index.html';
+        } else {
+            try {
+                const data = JSON.parse(user);
+                if (data.role !== 'Admin') {
+                    window.location.href = 'dashboard-sales.html';
+                }
+                document.getElementById('adminName').textContent = data.name || 'James';
+            } catch(e) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // ============================================
+        // LOGOUT - CLEAR ALL SESSION DATA
+        // ============================================
+        document.getElementById('adminLogout').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('🚪 Are you sure you want to logout?')) {
+                // Clear ALL session storage
+                sessionStorage.clear();
+                // Clear local storage (remember me)
+                localStorage.removeItem('mutomo_remember_username');
+                // Redirect to login
+                window.location.href = 'index.html';
+            }
+        });
+
+        // ============================================
+        // MENU ITEMS
+        // ============================================
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                alert('📄 ' + this.textContent.trim() + ' page would load');
+            });
+        });
+
+        // ============================================
+        // ADD EMPLOYEE
+        // ============================================
+        document.querySelector('.btn-blue.btn-block')?.addEventListener('click', function() {
+            alert('👤 Add Employee form would open');
+        });
+
+        console.log('🛡️ Admin Dashboard loaded');
+    </script>
+
+</body>
+</html>
