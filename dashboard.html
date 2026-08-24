@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* Dashboard styles - condensed for brevity */
         * {
             margin: 0;
             padding: 0;
@@ -19,7 +18,7 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             background: #eef2f7;
             padding: 20px;
         }
@@ -89,8 +88,8 @@
             background: rgba(255, 255, 255, 0.25);
         }
         .admin-badge .logout-btn {
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.3);
             color: white;
             padding: 4px 12px;
             border-radius: 100px;
@@ -101,16 +100,29 @@
             margin-left: 4px;
         }
         .admin-badge .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 0, 0, 0.4);
+        }
+        .admin-badge .role-tag {
+            padding: 2px 10px;
+            border-radius: 100px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .admin-badge .role-tag.admin-tag {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+        }
+        .admin-badge .role-tag.sales-tag {
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
         }
         .stats-row {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 14px;
             margin-bottom: 24px;
-        }
-        .stats-row.hidden {
-            display: none;
         }
         .stat-card {
             background: #fff;
@@ -134,37 +146,14 @@
             font-size: 1.1rem;
             margin-bottom: 10px;
         }
-        .stat-card .stat-icon.orange {
-            background: #fef5e7;
-            color: #e67e22;
-        }
-        .stat-card .stat-icon.green {
-            background: #eafaf1;
-            color: #27ae60;
-        }
-        .stat-card .stat-icon.blue {
-            background: #ebf5fb;
-            color: #2e86c1;
-        }
-        .stat-card .stat-icon.purple {
-            background: #f3e8ff;
-            color: #7c3aed;
-        }
-        .stat-card .stat-icon.red {
-            background: #fde8e8;
-            color: #dc2626;
-        }
-        .stat-card .stat-number {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #0f1724;
-        }
-        .stat-card .stat-label {
-            font-size: 0.75rem;
-            color: #64748b;
-            font-weight: 500;
-            margin-top: 2px;
-        }
+        .stat-card .stat-icon.orange { background: #fef5e7; color: #e67e22; }
+        .stat-card .stat-icon.green { background: #eafaf1; color: #27ae60; }
+        .stat-card .stat-icon.blue { background: #ebf5fb; color: #2e86c1; }
+        .stat-card .stat-icon.purple { background: #f3e8ff; color: #7c3aed; }
+        .stat-card .stat-icon.red { background: #fde8e8; color: #dc2626; }
+        .stat-card .stat-number { font-size: 1.6rem; font-weight: 700; color: #0f1724; }
+        .stat-card .stat-label { font-size: 0.75rem; color: #64748b; font-weight: 500; margin-top: 2px; }
+
         .grid-main {
             display: grid;
             grid-template-columns: 1.4fr 0.6fr;
@@ -204,14 +193,20 @@
             border-radius: 100px;
             margin-left: 6px;
         }
-        .card-title .badge.green {
-            background: #d5f5e3;
-            color: #1e8449;
-        }
-        .card-title .badge.blue {
-            background: #d4e6f1;
-            color: #1a5276;
-        }
+        .card-title .badge.green { background: #d5f5e3; color: #1e8449; }
+        .card-title .badge.blue { background: #d4e6f1; color: #1a5276; }
+
+        /* ROLE-BASED HIDDEN SECTIONS */
+        .admin-only { display: block; }
+        .sales-only { display: none; }
+        body.role-sales .admin-only { display: none !important; }
+        body.role-sales .sales-only { display: block !important; }
+        body.role-sales .stat-card .stat-number { color: #27ae60; }
+        body.role-sales .brand h1 { color: #27ae60; }
+        body.role-sales .brand h1 small { color: #1e8449; }
+        body.role-sales .admin-badge { background: #27ae60; }
+        body.role-sales .card-title i { color: #27ae60; }
+
         .input-row {
             display: flex;
             flex-wrap: wrap;
@@ -253,10 +248,6 @@
             appearance: none;
             cursor: pointer;
         }
-        .input-field input::placeholder {
-            font-weight: 400;
-            color: #94a3b8;
-        }
         .btn {
             border: none;
             padding: 9px 18px;
@@ -277,45 +268,16 @@
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
         }
-        .btn-orange {
-            background: #e67e22;
-            color: white;
-            border: none;
-            box-shadow: 0 4px 12px rgba(230, 126, 34, 0.25);
-        }
-        .btn-orange:hover {
-            background: #d35400;
-        }
-        .btn-green {
-            background: #27ae60;
-            color: white;
-            border: none;
-            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.25);
-        }
-        .btn-green:hover {
-            background: #1e8449;
-        }
-        .btn-blue {
-            background: #2e86c1;
-            color: white;
-            border: none;
-            box-shadow: 0 4px 12px rgba(46, 134, 193, 0.25);
-        }
-        .btn-blue:hover {
-            background: #1a5276;
-        }
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-            border: none;
-        }
-        .btn-danger:hover {
-            background: #c82333;
-        }
-        .btn-sm {
-            padding: 5px 12px;
-            font-size: 0.7rem;
-        }
+        .btn-orange { background: #e67e22; color: white; border: none; box-shadow: 0 4px 12px rgba(230, 126, 34, 0.25); }
+        .btn-orange:hover { background: #d35400; }
+        .btn-green { background: #27ae60; color: white; border: none; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.25); }
+        .btn-green:hover { background: #1e8449; }
+        .btn-blue { background: #2e86c1; color: white; border: none; box-shadow: 0 4px 12px rgba(46, 134, 193, 0.25); }
+        .btn-blue:hover { background: #1a5276; }
+        .btn-danger { background: #dc3545; color: white; border: none; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-sm { padding: 5px 12px; font-size: 0.7rem; }
+
         .table-wrap {
             overflow-x: auto;
             margin: 10px 0 6px;
@@ -344,33 +306,9 @@
             border-bottom: 1px solid #f1f4f7;
             color: #334155;
         }
-        tr:last-child td {
-            border-bottom: none;
-        }
-        .empty-row td {
-            text-align: center;
-            padding: 28px 10px;
-            color: #94a3b8;
-            font-style: italic;
-        }
-        .item-actions i {
-            margin: 0 3px;
-            cursor: pointer;
-            color: #94a3b8;
-            transition: all 0.2s;
-            padding: 4px;
-            border-radius: 6px;
-        }
-        .item-actions i:hover {
-            color: #e67e22;
-            background: #fdebd0;
-        }
-        .employee-section {
-            display: block;
-        }
-        .employee-section.hidden {
-            display: none;
-        }
+        tr:last-child td { border-bottom: none; }
+        .empty-row td { text-align: center; padding: 28px 10px; color: #94a3b8; font-style: italic; }
+
         .employee-list {
             border: 1px solid #e2e8f0;
             border-radius: 10px;
@@ -386,12 +324,8 @@
             border-bottom: 1px solid #e2e8f0;
             background: #fff;
         }
-        .employee-item:last-child {
-            border-bottom: none;
-        }
-        .employee-item:hover {
-            background: #f8fafc;
-        }
+        .employee-item:last-child { border-bottom: none; }
+        .employee-item:hover { background: #f8fafc; }
         .emp-info {
             display: flex;
             align-items: center;
@@ -399,26 +333,8 @@
             font-weight: 500;
             color: #334155;
         }
-        .emp-info i {
-            color: #2e86c1;
-            width: 18px;
-        }
-        .emp-actions {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .emp-actions i {
-            color: #94a3b8;
-            cursor: pointer;
-            padding: 4px 6px;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-        .emp-actions i:hover {
-            color: #e67e22;
-            background: #fdebd0;
-        }
+        .emp-info i { color: #2e86c1; width: 18px; }
+
         .self-stock-section {
             background: #f8fafc;
             border-radius: 10px;
@@ -435,9 +351,8 @@
             align-items: center;
             gap: 6px;
         }
-        .self-stock-section .section-label i {
-            color: #e67e22;
-        }
+        .self-stock-section .section-label i { color: #e67e22; }
+
         .progress-log {
             border: 1px solid #e2e8f0;
             border-radius: 10px;
@@ -453,33 +368,8 @@
             border-bottom: 1px solid #f1f4f7;
             font-size: 0.78rem;
         }
-        .log-item:last-child {
-            border-bottom: none;
-        }
-        .log-item .emp-name {
-            font-weight: 600;
-            color: #1a5276;
-        }
-        .employee-progress-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 8px;
-            border-bottom: 1px solid #f1f4f7;
-            font-size: 0.8rem;
-        }
-        .employee-progress-item:last-child {
-            border-bottom: none;
-        }
-        .chart-section {
-            display: block;
-        }
-        .chart-section.hidden {
-            display: none;
-        }
-        .chart-wrapper {
-            height: 200px;
-            margin-top: 6px;
-        }
+        .log-item:last-child { border-bottom: none; }
+
         .product-management {
             background: #f8fafc;
             border-radius: 10px;
@@ -496,9 +386,7 @@
             align-items: center;
             gap: 6px;
         }
-        .product-management .section-label i {
-            color: #2e86c1;
-        }
+        .product-management .section-label i { color: #2e86c1; }
         .product-list {
             max-height: 130px;
             overflow-y: auto;
@@ -512,29 +400,10 @@
             border-bottom: 1px solid #e2e8f0;
             font-size: 0.8rem;
         }
-        .product-item:last-child {
-            border-bottom: none;
-        }
-        .product-item .product-name {
-            font-weight: 500;
-            color: #334155;
-        }
-        .product-item .product-price {
-            font-weight: 600;
-            color: #1a5276;
-        }
-        .product-item .product-actions i {
-            margin-left: 6px;
-            cursor: pointer;
-            color: #94a3b8;
-            transition: all 0.2s;
-            padding: 2px 4px;
-            border-radius: 4px;
-        }
-        .product-item .product-actions i:hover {
-            color: #dc3545;
-            background: #fde8e8;
-        }
+        .product-item:last-child { border-bottom: none; }
+        .product-item .product-name { font-weight: 500; color: #334155; }
+        .product-item .product-price { font-weight: 600; color: #1a5276; }
+
         .business-details-section {
             background: #f8fafc;
             border-radius: 10px;
@@ -551,18 +420,14 @@
             align-items: center;
             gap: 6px;
         }
-        .business-details-section .section-label i {
-            color: #e67e22;
-        }
+        .business-details-section .section-label i { color: #e67e22; }
         .business-details-section .detail-row {
             display: flex;
             gap: 6px;
             margin-bottom: 6px;
         }
-        .business-details-section .detail-row .input-field {
-            flex: 1;
-            background: white;
-        }
+        .business-details-section .detail-row .input-field { flex: 1; background: white; }
+
         .dashboard-footer {
             text-align: center;
             margin-top: 24px;
@@ -577,14 +442,8 @@
             font-size: 0.7rem;
             font-weight: 500;
         }
-        .dashboard-footer .security-badge i {
-            color: #27ae60;
-        }
-        .dashboard-footer .version {
-            color: #94a3b8;
-            font-size: 0.65rem;
-            margin-top: 6px;
-        }
+        .dashboard-footer .security-badge i { color: #27ae60; }
+        .dashboard-footer .version { color: #94a3b8; font-size: 0.65rem; margin-top: 6px; }
         .powered-by {
             text-align: center;
             margin-top: 14px;
@@ -600,19 +459,12 @@
             border-radius: 100px;
             background: rgba(0, 0, 0, 0.02);
         }
-        .powered-by .tech-badge i {
-            font-size: 0.75rem;
-            color: #e67e22;
-        }
-        .powered-by .tech-badge .dot {
-            color: #27ae60;
-            font-size: 0.35rem;
-        }
-        .powered-by .tech-badge strong {
-            color: #0f1724;
-        }
+        .powered-by .tech-badge i { font-size: 0.75rem; color: #e67e22; }
+        .powered-by .tech-badge .dot { color: #27ae60; font-size: 0.35rem; }
+        .powered-by .tech-badge strong { color: #0f1724; }
 
-        /* Modals */
+        .chart-wrapper { height: 200px; margin-top: 6px; }
+
         .modal-overlay {
             display: none;
             position: fixed;
@@ -626,9 +478,7 @@
             justify-content: center;
             align-items: center;
         }
-        .modal-overlay.active {
-            display: flex;
-        }
+        .modal-overlay.active { display: flex; }
         .modal-content {
             background: white;
             border-radius: 18px;
@@ -647,10 +497,7 @@
             transition: all 0.2s;
             line-height: 1;
         }
-        .modal-content .close-btn:hover {
-            color: #dc3545;
-            transform: rotate(90deg);
-        }
+        .modal-content .close-btn:hover { color: #dc3545; transform: rotate(90deg); }
         .modal-content h2 {
             color: #1a5276;
             margin-bottom: 18px;
@@ -658,9 +505,7 @@
             border-bottom: 2px solid #f1f4f7;
             padding-bottom: 12px;
         }
-        .modal-content .form-group {
-            margin-bottom: 14px;
-        }
+        .modal-content .form-group { margin-bottom: 14px; }
         .modal-content .form-group label {
             display: block;
             font-weight: 600;
@@ -668,9 +513,7 @@
             color: #334155;
             margin-bottom: 4px;
         }
-        .modal-content .input-field {
-            flex: 1 0 100%;
-        }
+        .modal-content .input-field { flex: 1 0 100%; }
         .modal-content .success-msg {
             background: #d5f5e3;
             border: 1px solid #a9dfbf;
@@ -683,9 +526,8 @@
             gap: 8px;
             margin-bottom: 14px;
         }
-        .modal-content .success-msg.show {
-            display: flex;
-        }
+        .modal-content .success-msg.show { display: flex; }
+
         .receipt-modal {
             display: none;
             position: fixed;
@@ -699,9 +541,7 @@
             justify-content: center;
             align-items: center;
         }
-        .receipt-modal.active {
-            display: flex;
-        }
+        .receipt-modal.active { display: flex; }
         .receipt-content {
             background: white;
             border-radius: 18px;
@@ -720,29 +560,18 @@
             transition: all 0.2s;
             line-height: 1;
         }
-        .receipt-content .close-btn:hover {
-            color: #dc3545;
-            transform: rotate(90deg);
-        }
+        .receipt-content .close-btn:hover { color: #dc3545; transform: rotate(90deg); }
         .receipt-header {
             text-align: center;
             border-bottom: 2px dashed #e2e8f0;
             padding-bottom: 12px;
             margin-bottom: 12px;
         }
-        .receipt-header h2 {
-            color: #1a5276;
-            font-size: 1.2rem;
-        }
+        .receipt-header h2 { color: #1a5276; font-size: 1.2rem; }
         .receipt-header .receipt-business {
             font-size: 0.8rem;
             color: #64748b;
             line-height: 1.6;
-        }
-        .receipt-header .receipt-business .business-name {
-            font-weight: 700;
-            color: #0f1724;
-            font-size: 0.9rem;
         }
         .receipt-body .receipt-row {
             display: flex;
@@ -779,43 +608,20 @@
             width: 100%;
             margin-top: 10px;
         }
-        .btn-print:hover {
-            background: #1e8449;
-        }
+        .btn-print:hover { background: #1e8449; }
 
         @media (max-width: 768px) {
-            .stats-row {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            .grid-main {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
+            .stats-row { grid-template-columns: repeat(3, 1fr); }
+            .grid-main { grid-template-columns: 1fr; gap: 16px; }
         }
         @media (max-width: 500px) {
-            .stats-row {
-                grid-template-columns: 1fr 1fr;
-            }
-            .store-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            .brand h1 {
-                font-size: 1.2rem;
-            }
-            .modal-content {
-                padding: 24px 18px;
-            }
-            .receipt-content {
-                padding: 20px 16px;
-            }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .store-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .brand h1 { font-size: 1.2rem; }
+            .modal-content { padding: 24px 18px; }
+            .receipt-content { padding: 20px 16px; }
         }
-        @media (max-width: 380px) {
-            .stats-row {
-                grid-template-columns: 1fr;
-            }
-        }
+        @media (max-width: 380px) { .stats-row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -827,13 +633,17 @@
                 <h1>Mutomo Chain <small>Stores</small></h1>
             </div>
             <div class="admin-badge">
-                <i class="fas fa-user-shield"></i> <span id="userRoleDisplay">Admin</span> · <span id="userNameDisplay">James</span>
-                <button class="btn-icon" id="changePasswordBtn"><i class="fas fa-key"></i> Change Password</button>
+                <i class="fas fa-user-shield"></i>
+                <span id="userRoleDisplay">Admin</span>
+                <span class="role-tag admin-tag" id="roleTagDisplay">ADMIN</span>
+                <span>·</span>
+                <span id="userNameDisplay">James</span>
+                <button class="btn-icon" id="changePasswordBtn"><i class="fas fa-key"></i></button>
                 <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
             </div>
         </div>
 
-        <!-- Stats Row -->
+        <!-- Stats -->
         <div class="stats-row" id="statsRow">
             <div class="stat-card"><div class="stat-icon orange"><i class="fas fa-shopping-cart"></i></div><div class="stat-number" id="statTotalSales">0</div><div class="stat-label">Total Sales</div></div>
             <div class="stat-card"><div class="stat-icon green"><i class="fas fa-box"></i></div><div class="stat-number" id="statTotalQty">0</div><div class="stat-label">Total Quantity</div></div>
@@ -844,7 +654,7 @@
 
         <!-- Grid Main -->
         <div class="grid-main">
-            <!-- LEFT: Sales & Stock -->
+            <!-- LEFT -->
             <div class="card">
                 <div class="card-title">
                     <i class="fas fa-cart-plus"></i> Sales & Stock
@@ -885,12 +695,27 @@
 
             <!-- RIGHT -->
             <div class="card">
-                <div class="employee-section" id="employeeSection">
+                <!-- EMPLOYEES - ADMIN ONLY -->
+                <div class="employee-section admin-only" id="employeeSection">
                     <div class="card-title"><i class="fas fa-users"></i> Employees <span class="badge green" id="employeeCount">0</span></div>
                     <div class="employee-list" id="employeeListContainer"></div>
                     <div style="display:flex; gap:8px; margin-top:8px;">
                         <button class="btn btn-blue btn-sm" id="addEmployeeBtn" style="flex:1; justify-content:center;"><i class="fas fa-user-plus"></i> Add Employee</button>
                         <button class="btn btn-green btn-sm" id="manageEmployeesBtn" style="flex:1; justify-content:center;"><i class="fas fa-cog"></i> Manage</button>
+                    </div>
+                </div>
+
+                <!-- SALES WELCOME - SALES ONLY -->
+                <div class="sales-only" style="background:#f0fdf4; border:2px solid #27ae60; border-radius:12px; padding:20px; text-align:center; margin-bottom:12px;">
+                    <i class="fas fa-user-tie" style="font-size:2.5rem; color:#27ae60; display:block; margin-bottom:8px;"></i>
+                    <h3 style="color:#1e8449; font-size:1.1rem;">Welcome, Sales Team! 👋</h3>
+                    <p style="color:#64748b; font-size:0.85rem; margin-top:4px;">You have access to sales, stock, and products</p>
+                    <div style="margin-top:8px; font-size:0.7rem; color:#94a3b8;">
+                        <i class="fas fa-check-circle" style="color:#27ae60;"></i> View sales & stock
+                        <span style="margin:0 6px;">|</span>
+                        <i class="fas fa-check-circle" style="color:#27ae60;"></i> Add sales records
+                        <span style="margin:0 6px;">|</span>
+                        <i class="fas fa-check-circle" style="color:#27ae60;"></i> Generate receipts
                     </div>
                 </div>
 
@@ -1050,11 +875,545 @@
     </div>
 
     <script>
-        // Full dashboard JavaScript - same as previous working version
-        // (All the JavaScript from the combined system goes here)
-        // I'll include the complete working script that was tested
-        // For brevity in this response, the full script is included in the final combined file
-        console.log('Dashboard loaded - full script included in complete file');
+        (function() {
+            "use strict";
+
+            // ===== CHECK LOGIN STATUS =====
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            let userData;
+            try {
+                userData = JSON.parse(currentUser);
+            } catch (e) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const isAdmin = userData.role === 'Admin';
+            const isSales = userData.role === 'Sales';
+
+            // ===== APPLY ROLE-BASED STYLING =====
+            if (isSales) {
+                document.body.classList.add('role-sales');
+                document.getElementById('userRoleDisplay').textContent = 'Sales Person';
+                document.getElementById('roleTagDisplay').textContent = 'SALES';
+                document.getElementById('roleTagDisplay').className = 'role-tag sales-tag';
+                document.getElementById('userRoleTag').textContent = 'Sales';
+                document.getElementById('userRoleTag').className = 'badge green';
+                document.getElementById('performanceTitle').textContent = 'My Performance';
+                document.getElementById('performanceBadge').textContent = 'Personal';
+                document.querySelector('.admin-badge i').className = 'fas fa-user-tie';
+                document.getElementById('exportStockBtn').style.display = 'none';
+            } else {
+                document.getElementById('userRoleDisplay').textContent = 'Admin';
+                document.getElementById('roleTagDisplay').textContent = 'ADMIN';
+                document.getElementById('roleTagDisplay').className = 'role-tag admin-tag';
+                document.getElementById('userRoleTag').textContent = 'Admin';
+                document.getElementById('userNameDisplay').textContent = userData.name || 'James';
+                document.getElementById('performanceTitle').textContent = 'Performance';
+                document.getElementById('performanceBadge').textContent = 'All Staff';
+                document.querySelector('.admin-badge i').className = 'fas fa-user-shield';
+            }
+
+            document.getElementById('userNameDisplay').textContent = userData.name || 'James';
+
+            // ===== LOGOUT FUNCTION =====
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('🚪 Are you sure you want to logout?')) {
+                    sessionStorage.removeItem('currentUser');
+                    localStorage.removeItem('mutomo_remember_username');
+                    window.location.href = 'login.html';
+                }
+            });
+
+            // ===== CHANGE PASSWORD =====
+            document.getElementById('changePasswordBtn').addEventListener('click', function() {
+                document.getElementById('changePasswordModal').classList.add('active');
+                document.getElementById('passwordSuccess').classList.remove('show');
+                document.getElementById('changePasswordForm').reset();
+            });
+
+            document.getElementById('closePasswordModal').addEventListener('click', function() {
+                document.getElementById('changePasswordModal').classList.remove('active');
+            });
+
+            document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const current = document.getElementById('currentPassword').value;
+                const newPass = document.getElementById('newPassword').value;
+                const confirm = document.getElementById('confirmPassword').value;
+
+                if (newPass !== confirm) {
+                    alert('❌ New passwords do not match!');
+                    return;
+                }
+
+                if (newPass.length < 4) {
+                    alert('❌ Password must be at least 4 characters!');
+                    return;
+                }
+
+                const storedUser = JSON.parse(sessionStorage.getItem('currentUser'));
+                if (storedUser && storedUser.password === current) {
+                    storedUser.password = newPass;
+                    sessionStorage.setItem('currentUser', JSON.stringify(storedUser));
+                    document.getElementById('passwordSuccess').classList.add('show');
+                    setTimeout(() => {
+                        document.getElementById('changePasswordModal').classList.remove('active');
+                    }, 1500);
+                } else {
+                    alert('❌ Current password is incorrect!');
+                }
+            });
+
+            // ===== CLOSE MODALS ON BACKDROP CLICK =====
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('active');
+                    }
+                });
+            });
+
+            document.getElementById('closeReceiptBtn').addEventListener('click', function() {
+                document.getElementById('receiptModal').classList.remove('active');
+            });
+
+            // ===== SAMPLE DATA =====
+            const products = ['Laptop', 'Phone', 'Tablet', 'Headphones', 'Charger'];
+            const salesPersons = ['Alice', 'Bob', 'Carol', 'Dave', 'Eve'];
+            const routes = ['CBD', 'Westlands', 'Karen', 'Rongai', 'Thika'];
+
+            // Populate product dropdowns
+            const productSelect = document.getElementById('productSelect');
+            const selfItemSelect = document.getElementById('selfItemSelect');
+            products.forEach(p => {
+                const opt1 = document.createElement('option');
+                opt1.value = p;
+                opt1.textContent = p;
+                productSelect.appendChild(opt1);
+
+                const opt2 = document.createElement('option');
+                opt2.value = p;
+                opt2.textContent = p;
+                selfItemSelect.appendChild(opt2);
+            });
+
+            // Populate employee dropdown
+            const selfEmpSelect = document.getElementById('selfEmployeeSelect');
+            salesPersons.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                selfEmpSelect.appendChild(opt);
+            });
+
+            let salesData = [];
+            let activityLog = [];
+            let employeeList = salesPersons.map(name => ({ name, role: 'Sales' }));
+            employeeList.push({ name: 'James', role: 'Admin' });
+
+            // Stats
+            function updateStats() {
+                let totalSales = 0, totalQty = 0, totalReturns = 0, totalRevenue = 0;
+                salesData.forEach(row => {
+                    totalSales++;
+                    totalQty += parseInt(row.qty) || 0;
+                    totalReturns += parseInt(row.ret) || 0;
+                    totalRevenue += parseFloat(row.total) || 0;
+                });
+                document.getElementById('statTotalSales').textContent = totalSales;
+                document.getElementById('statTotalQty').textContent = totalQty;
+                document.getElementById('statEmployees').textContent = employeeList.length;
+                document.getElementById('statReturns').textContent = totalReturns;
+                document.getElementById('statRevenue').textContent = 'KSh ' + totalRevenue.toFixed(2);
+                document.getElementById('employeeCount').textContent = employeeList.length;
+                document.getElementById('logCount').textContent = activityLog.length;
+            }
+
+            function renderTable() {
+                const tbody = document.getElementById('salesBody');
+                if (salesData.length === 0) {
+                    tbody.innerHTML = '<tr class="empty-row"><td colspan="8"><i class="fas fa-box-open"></i> No sales records</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = salesData.map((row, i) => `
+                    <tr>
+                        <td>${row.salesPerson}</td>
+                        <td>${row.route}</td>
+                        <td>${row.date}</td>
+                        <td>${row.product}</td>
+                        <td>${row.qty}</td>
+                        <td>${row.ret}</td>
+                        <td>KSh ${parseFloat(row.total).toFixed(2)}</td>
+                        <td style="text-align:center;">
+                            <span class="item-actions">
+                                <i class="fas fa-edit" onclick="editRow(${i})" title="Edit"></i>
+                                <i class="fas fa-trash" onclick="deleteRow(${i})" title="Delete"></i>
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+                updateStats();
+            }
+
+            function renderEmployees() {
+                const container = document.getElementById('employeeListContainer');
+                if (employeeList.length === 0) {
+                    container.innerHTML = '<div style="padding:20px;text-align:center;color:#94a3b8;">No employees</div>';
+                    return;
+                }
+                container.innerHTML = employeeList.map(emp => `
+                    <div class="employee-item">
+                        <div class="emp-info"><i class="fas fa-user"></i> ${emp.name}</div>
+                        <span style="font-size:0.65rem;color:#64748b;background:#f1f5f9;padding:2px 10px;border-radius:100px;">${emp.role}</span>
+                    </div>
+                `).join('');
+                updateStats();
+            }
+
+            function renderProducts() {
+                const container = document.getElementById('productListContainer');
+                if (products.length === 0) {
+                    container.innerHTML = '<div style="padding:8px;text-align:center;color:#94a3b8;font-size:0.75rem;">No products</div>';
+                    return;
+                }
+                container.innerHTML = products.map(p => `
+                    <div class="product-item">
+                        <span class="product-name"><i class="fas fa-tag" style="color:#e67e22;font-size:0.6rem;"></i> ${p}</span>
+                        <span class="product-price">KSh ${(Math.random() * 500 + 100).toFixed(2)}</span>
+                    </div>
+                `).join('');
+            }
+
+            function addLog(message) {
+                const time = new Date().toLocaleTimeString();
+                activityLog.unshift({ message, time });
+                const container = document.getElementById('activityLogContainer');
+                if (activityLog.length === 0) {
+                    container.innerHTML = '<div class="log-item" style="color:#94a3b8;font-style:italic;justify-content:center;">No activity yet</div>';
+                    return;
+                }
+                container.innerHTML = activityLog.slice(0, 10).map(log => `
+                    <div class="log-item">
+                        <span>${log.message}</span>
+                        <span style="color:#94a3b8;font-size:0.65rem;">${log.time}</span>
+                    </div>
+                `).join('');
+                document.getElementById('logCount').textContent = activityLog.length;
+            }
+
+            // Add Row
+            document.getElementById('addRowBtn').addEventListener('click', function() {
+                const salesPerson = document.getElementById('salesPerson').value || 'Unknown';
+                const route = document.getElementById('route').value || 'Unknown';
+                const date = document.getElementById('date').value || '2026-08-24';
+                const product = document.getElementById('productSelect').value;
+                const qty = parseInt(document.getElementById('quantity').value) || 0;
+                const ret = parseInt(document.getElementById('returnSold').value) || 0;
+                const price = Math.random() * 500 + 100;
+                const total = qty * price;
+
+                if (qty <= 0) {
+                    alert('⚠️ Quantity must be greater than 0');
+                    return;
+                }
+
+                salesData.push({ salesPerson, route, date, product, qty, ret, total });
+                renderTable();
+                addLog(`📦 ${salesPerson} added ${qty} × ${product} (KSh ${total.toFixed(2)})`);
+                updateChart();
+            });
+
+            // Delete Row
+            window.deleteRow = function(index) {
+                if (confirm('🗑️ Delete this record?')) {
+                    const row = salesData[index];
+                    salesData.splice(index, 1);
+                    renderTable();
+                    addLog(`🗑️ Deleted record for ${row.salesPerson} - ${row.product}`);
+                    updateChart();
+                }
+            };
+
+            // Edit Row
+            window.editRow = function(index) {
+                const row = salesData[index];
+                document.getElementById('salesPerson').value = row.salesPerson;
+                document.getElementById('route').value = row.route;
+                document.getElementById('date').value = row.date;
+                document.getElementById('productSelect').value = row.product;
+                document.getElementById('quantity').value = row.qty;
+                document.getElementById('returnSold').value = row.ret;
+                salesData.splice(index, 1);
+                renderTable();
+                addLog(`✏️ Editing record for ${row.salesPerson} - ${row.product}`);
+                updateChart();
+            };
+
+            // Clear All
+            document.getElementById('clearAllBtn').addEventListener('click', function() {
+                if (confirm('⚠️ Clear all sales records?')) {
+                    salesData = [];
+                    renderTable();
+                    addLog('🗑️ All records cleared');
+                    updateChart();
+                }
+            });
+
+            // Sample Data
+            document.getElementById('sampleDataBtn').addEventListener('click', function() {
+                const sampleProducts = ['Laptop', 'Phone', 'Tablet', 'Headphones'];
+                const samplePeople = ['Alice', 'Bob', 'Carol'];
+                const sampleRoutes = ['CBD', 'Westlands', 'Karen'];
+                for (let i = 0; i < 8; i++) {
+                    const p = sampleProducts[i % sampleProducts.length];
+                    const price = Math.random() * 500 + 100;
+                    salesData.push({
+                        salesPerson: samplePeople[i % samplePeople.length],
+                        route: sampleRoutes[i % sampleRoutes.length],
+                        date: '2026-08-24',
+                        product: p,
+                        qty: Math.floor(Math.random() * 20) + 1,
+                        ret: Math.floor(Math.random() * 3),
+                        total: (Math.floor(Math.random() * 20) + 1) * price
+                    });
+                }
+                renderTable();
+                addLog('📊 Sample data loaded');
+                updateChart();
+            });
+
+            // Receipt
+            document.getElementById('generateReceiptBtn').addEventListener('click', function() {
+                if (salesData.length === 0) {
+                    alert('⚠️ No sales records to generate receipt!');
+                    return;
+                }
+                const receiptBody = document.getElementById('receiptBody');
+                let html = '<div class="receipt-row" style="font-weight:600;color:#475569;border-bottom:2px solid #e2e8f0;"><span>Item</span><span>Qty</span><span>Total</span></div>';
+                let grandTotal = 0;
+                salesData.forEach(row => {
+                    const total = parseFloat(row.total).toFixed(2);
+                    grandTotal += parseFloat(total);
+                    html += `<div class="receipt-row"><span>${row.product}</span><span>${row.qty}</span><span>KSh ${total}</span></div>`;
+                });
+                html += `<div class="receipt-row total"><span>TOTAL</span><span></span><span>KSh ${grandTotal.toFixed(2)}</span></div>`;
+                receiptBody.innerHTML = html;
+                document.getElementById('receiptNumber').textContent = String(Math.floor(Math.random() * 9999) + 1000).padStart(4, '0');
+                document.getElementById('receiptDate').textContent = new Date().toLocaleDateString();
+                document.getElementById('receiptModal').classList.add('active');
+            });
+
+            // Save Business Details
+            document.getElementById('saveBusinessDetailsBtn').addEventListener('click', function() {
+                const name = document.getElementById('businessName').value;
+                const address = document.getElementById('businessAddress').value;
+                const phone = document.getElementById('businessPhone').value;
+                const email = document.getElementById('businessEmail').value;
+                document.getElementById('receiptBusinessName').textContent = name;
+                document.getElementById('receiptBusinessAddress').textContent = '📍 ' + address;
+                document.getElementById('receiptBusinessPhone').textContent = '📞 ' + phone;
+                document.getElementById('receiptBusinessEmail').textContent = '✉️ ' + email;
+                addLog('💾 Business details saved');
+                alert('✅ Business details saved successfully!');
+            });
+
+            // Add Employee
+            document.getElementById('addEmployeeBtn').addEventListener('click', function() {
+                document.getElementById('addEmployeeModal').classList.add('active');
+            });
+
+            document.getElementById('closeAddEmployeeModal').addEventListener('click', function() {
+                document.getElementById('addEmployeeModal').classList.remove('active');
+            });
+
+            document.getElementById('addEmployeeForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('empFullName').value;
+                const username = document.getElementById('empUsername').value;
+                const password = document.getElementById('empPassword').value;
+                const role = document.getElementById('empRole').value;
+
+                if (!name || !username || !password) {
+                    alert('⚠️ Please fill all fields');
+                    return;
+                }
+
+                employeeList.push({ name, role });
+                renderEmployees();
+                addLog(`👤 New employee added: ${name} (${role})`);
+                document.getElementById('addEmployeeModal').classList.remove('active');
+                document.getElementById('addEmployeeForm').reset();
+                alert(`✅ Employee ${name} added successfully!`);
+            });
+
+            // Manage Employees
+            document.getElementById('manageEmployeesBtn').addEventListener('click', function() {
+                const container = document.getElementById('manageEmployeesList');
+                if (employeeList.length === 0) {
+                    container.innerHTML = '<p style="color:#94a3b8;">No employees</p>';
+                } else {
+                    container.innerHTML = employeeList.map((emp, i) => `
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #e2e8f0;">
+                            <div><strong>${emp.name}</strong> <span style="font-size:0.7rem;color:#64748b;background:#f1f5f9;padding:2px 10px;border-radius:100px;margin-left:8px;">${emp.role}</span></div>
+                            <button class="btn btn-sm btn-danger" onclick="removeEmployee(${i})"><i class="fas fa-trash"></i></button>
+                        </div>
+                    `).join('');
+                }
+                document.getElementById('manageEmployeesModal').classList.add('active');
+            });
+
+            window.removeEmployee = function(index) {
+                if (confirm(`🗑️ Remove ${employeeList[index].name}?`)) {
+                    employeeList.splice(index, 1);
+                    renderEmployees();
+                    document.getElementById('manageEmployeesModal').classList.remove('active');
+                    addLog(`🗑️ Employee removed`);
+                    alert('✅ Employee removed!');
+                }
+            };
+
+            document.getElementById('closeManageEmployeesModal').addEventListener('click', function() {
+                document.getElementById('manageEmployeesModal').classList.remove('active');
+            });
+
+            // Add Product
+            document.getElementById('addProductBtn').addEventListener('click', function() {
+                const name = document.getElementById('newProductName').value.trim();
+                const price = document.getElementById('newProductPrice').value;
+                if (!name) {
+                    alert('⚠️ Please enter a product name');
+                    return;
+                }
+                products.push(name);
+                renderProducts();
+                // Update dropdowns
+                const opt1 = document.createElement('option');
+                opt1.value = name;
+                opt1.textContent = name;
+                document.getElementById('productSelect').appendChild(opt1);
+                const opt2 = document.createElement('option');
+                opt2.value = name;
+                opt2.textContent = name;
+                document.getElementById('selfItemSelect').appendChild(opt2);
+                document.getElementById('newProductName').value = '';
+                document.getElementById('newProductPrice').value = '';
+                addLog(`📦 New product added: ${name}`);
+                alert(`✅ Product "${name}" added!`);
+            });
+
+            // Self Stock Actions
+            document.getElementById('selfTookBtn').addEventListener('click', function() {
+                const emp = document.getElementById('selfEmployeeSelect').value;
+                const item = document.getElementById('selfItemSelect').value;
+                const qty = document.getElementById('selfActionQty').value;
+                if (!emp || !item) {
+                    alert('⚠️ Please select your name and product');
+                    return;
+                }
+                addLog(`📤 ${emp} took ${qty} × ${item} from stock`);
+                alert(`✅ ${emp} took ${qty} × ${item}`);
+            });
+
+            document.getElementById('selfReturnedBtn').addEventListener('click', function() {
+                const emp = document.getElementById('selfEmployeeSelect').value;
+                const item = document.getElementById('selfItemSelect').value;
+                const qty = document.getElementById('selfActionQty').value;
+                if (!emp || !item) {
+                    alert('⚠️ Please select your name and product');
+                    return;
+                }
+                addLog(`📥 ${emp} returned ${qty} × ${item} to stock`);
+                alert(`✅ ${emp} returned ${qty} × ${item}`);
+            });
+
+            // Export Stock
+            document.getElementById('exportStockBtn').addEventListener('click', function() {
+                document.getElementById('exportStockModal').classList.add('active');
+                document.getElementById('exportFromDate').value = new Date().toISOString().split('T')[0];
+                document.getElementById('exportToDate').value = new Date().toISOString().split('T')[0];
+            });
+
+            document.getElementById('closeExportModal').addEventListener('click', function() {
+                document.getElementById('exportStockModal').classList.remove('active');
+            });
+
+            document.getElementById('exportStockForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const from = document.getElementById('exportFromDate').value;
+                const to = document.getElementById('exportToDate').value;
+                alert(`📊 Exporting stock data from ${from} to ${to}\n${salesData.length} records found`);
+                document.getElementById('exportStockModal').classList.remove('active');
+            });
+
+            window.exportStockPDF = function() {
+                alert('📄 PDF export would generate a PDF of stock history');
+            };
+
+            // Chart
+            let chartInstance = null;
+            function updateChart() {
+                const ctx = document.getElementById('salesChart').getContext('2d');
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+                const productNames = [...new Set(salesData.map(r => r.product))];
+                const productTotals = productNames.map(p => {
+                    return salesData.filter(r => r.product === p).reduce((sum, r) => sum + parseFloat(r.total), 0);
+                });
+                chartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: productNames.length ? productNames : ['No Data'],
+                        datasets: [{
+                            label: 'Sales (KSh)',
+                            data: productNames.length ? productTotals : [0],
+                            backgroundColor: ['#00c853', '#ff6d00', '#2979ff', '#ffab40', '#69f0ae', '#82b1ff'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { callback: function(value) { return 'KSh ' + value.toFixed(0); } }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // ===== INIT =====
+            renderTable();
+            renderEmployees();
+            renderProducts();
+            updateChart();
+            addLog('👋 Welcome to Mutomo Chain Stores Dashboard');
+
+            // ===== KEYBOARD SHORTCUTS =====
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal-overlay.active, .receipt-modal.active').forEach(el => {
+                        el.classList.remove('active');
+                    });
+                }
+            });
+
+            console.log('✅ Dashboard loaded for:', userData.name, '| Role:', userData.role);
+
+        })();
     </script>
+
 </body>
 </html>
