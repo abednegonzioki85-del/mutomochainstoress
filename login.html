@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1004,15 +1005,24 @@
 
                         loginError.classList.remove('show');
                         loginSuccess.classList.add('show');
-                        loginSuccess.querySelector('span').textContent = `✅ Welcome back, ${user.name}! Redirecting to ${user.role} Dashboard...`;
+                        
+                        // ===== REDIRECT BASED ON ROLE =====
+                        if (userRole === 'admin') {
+                            loginSuccess.querySelector('span').textContent = `✅ Welcome Admin, ${user.name}! Redirecting to Admin Dashboard...`;
+                            sessionStorage.setItem('currentUser', JSON.stringify({ username, ...user }));
+                            setTimeout(() => {
+                                window.location.href = 'dashboard-admin.html';
+                            }, 1500);
+                        } else {
+                            loginSuccess.querySelector('span').textContent = `✅ Welcome Sales Person, ${user.name}! Redirecting to Sales Dashboard...`;
+                            sessionStorage.setItem('currentUser', JSON.stringify({ username, ...user }));
+                            setTimeout(() => {
+                                window.location.href = 'dashboard-sales.html';
+                            }, 1500);
+                        }
+                        
                         loginBtn.classList.remove('loading');
                         loginBtn.querySelector('.btn-text').textContent = 'Login';
-                        
-                        sessionStorage.setItem('currentUser', JSON.stringify({ username, ...user }));
-                        
-                        setTimeout(() => {
-                            window.location.href = 'dashboard.html';
-                        }, 1500);
                     } else {
                         loginError.querySelector('span').textContent = '❌ Invalid username or password. Please try again.';
                         loginError.classList.add('show');
@@ -1029,7 +1039,11 @@
             if (storedUser) {
                 try {
                     const user = JSON.parse(storedUser);
-                    window.location.href = 'dashboard.html';
+                    if (user.role === 'Admin') {
+                        window.location.href = 'dashboard-admin.html';
+                    } else {
+                        window.location.href = 'dashboard-sales.html';
+                    }
                 } catch (e) {
                     sessionStorage.removeItem('currentUser');
                 }
