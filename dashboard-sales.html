@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mutomo Chain Stores · Sales Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background: #eef2f7;
+            padding: 20px;
+        }
+        .dashboard-wrapper {
+            max-width: 1500px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .store-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .brand-icon {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 1.6rem;
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+        }
+        .brand h1 {
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: #27ae60;
+        }
+        .brand h1 small {
+            font-weight: 400;
+            font-size: 0.85rem;
+            color: #2ecc71;
+            margin-left: 6px;
+        }
+        .admin-badge {
+            background: #27ae60;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 100px;
+            font-weight: 500;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.2);
+        }
+        .admin-badge .logout-btn {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 100px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.7rem;
+            transition: all 0.2s;
+            margin-left: 4px;
+        }
+        .admin-badge .logout-btn:hover {
+            background: rgba(255, 0, 0, 0.4);
+        }
+        .admin-badge .role-tag {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            padding: 2px 10px;
+            border-radius: 100px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 18px 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            transition: all 0.2s;
+        }
+        .stat-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            transform: translateY(-2px);
+        }
+        .stat-card .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        .stat-card .stat-icon.orange { background: #fef5e7; color: #e67e22; }
+        .stat-card .stat-icon.green { background: #eafaf1; color: #27ae60; }
+        .stat-card .stat-icon.blue { background: #ebf5fb; color: #2e86c1; }
+        .stat-card .stat-icon.purple { background: #f3e8ff; color: #7c3aed; }
+        .stat-card .stat-icon.red { background: #fde8e8; color: #dc2626; }
+        .stat-card .stat-number { font-size: 1.6rem; font-weight: 700; color: #0f1724; }
+        .stat-card .stat-label { font-size: 0.75rem; color: #64748b; font-weight: 500; margin-top: 2px; }
+
+        .grid-main {
+            display: grid;
+            grid-template-columns: 1.4fr 0.6fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 22px 24px 24px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            transition: all 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+        .card-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .card-title i {
+            color: #27ae60;
+            font-size: 1rem;
+        }
+        .card-title .badge {
+            background: #fdebd0;
+            color: #d35400;
+            font-size: 0.6rem;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 100px;
+            margin-left: 6px;
+        }
+        .card-title .badge.green { background: #d5f5e3; color: #1e8449; }
+        .card-title .badge.blue { background: #d4e6f1; color: #1a5276; }
+
+        .input-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .input-field {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 2px 10px 2px 14px;
+            display: flex;
+            align-items: center;
+            border: 1.5px solid #e2e8f0;
+            flex: 1 0 100px;
+            transition: all 0.2s;
+        }
+        .input-field:focus-within {
+            border-color: #27ae60;
+            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+            background: #fff;
+        }
+        .input-field i {
+            color: #94a3b8;
+            margin-right: 8px;
+            font-size: 0.8rem;
+        }
+        .input-field input,
+        .input-field select {
+            border: none;
+            padding: 10px 4px 10px 0;
+            width: 100%;
+            background: transparent;
+            outline: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: #1e293b;
+        }
+        .input-field select {
+            appearance: none;
+            cursor: pointer;
+        }
+        .btn {
+            border: none;
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fff;
+            color: #334155;
+            border: 1.5px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+        .btn-orange { background: #e67e22; color: white; border: none; box-shadow: 0 4px 12px rgba(230, 126, 34, 0.25); }
+        .btn-orange:hover { background: #d35400; }
+        .btn-green { background: #27ae60; color: white; border: none; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.25); }
+        .btn-green:hover { background: #1e8449; }
+        .btn-blue { background: #2e86c1; color: white; border: none; box-shadow: 0 4px 12px rgba(46, 134, 193, 0.25); }
+        .btn-blue:hover { background: #1a5276; }
+        .btn-danger { background: #dc3545; color: white; border: none; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-sm { padding: 5px 12px; font-size: 0.7rem; }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin: 10px 0 6px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        th {
+            text-align: left;
+            padding: 10px 12px 8px 12px;
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            background: #f8fafc;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #f1f4f7;
+            color: #334155;
+        }
+        tr:last-child td { border-bottom: none; }
+        .empty-row td { text-align: center; padding: 28px 10px; color: #94a3b8; font-style: italic; }
+
+        .self-stock-section {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 14px 16px;
+            border: 1px solid #e2e8f0;
+            margin-top: 8px;
+        }
+        .self-stock-section .section-label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .self-stock-section .section-label i { color: #e67e22; }
+
+        .progress-log {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 8px 12px;
+            max-height: 110px;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+        .log-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 4px;
+            border-bottom: 1px solid #f1f4f7;
+            font-size: 0.78rem;
+        }
+        .log-item:last-child { border-bottom: none; }
+
+        .product-management {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 14px 16px;
+            border: 1px solid #e2e8f0;
+            margin-top: 8px;
+        }
+        .product-management .section-label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .product-management .section-label i { color: #27ae60; }
+        .product-list {
+            max-height: 130px;
+            overflow-y: auto;
+            margin-top: 6px;
+        }
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 8px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.8rem;
+        }
+        .product-item:last-child { border-bottom: none; }
+        .product-item .product-name { font-weight: 500; color: #334155; }
+        .product-item .product-price { font-weight: 600; color: #1a5276; }
+
+        .business-details-section {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 14px 16px;
+            border: 1px solid #e2e8f0;
+            margin-top: 8px;
+        }
+        .business-details-section .section-label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .business-details-section .section-label i { color: #e67e22; }
+        .business-details-section .detail-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .business-details-section .detail-row .input-field { flex: 1; background: white; }
+
+        .dashboard-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .dashboard-footer .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        .dashboard-footer .security-badge i { color: #27ae60; }
+        .dashboard-footer .version { color: #94a3b8; font-size: 0.65rem; margin-top: 6px; }
+        .powered-by {
+            text-align: center;
+            margin-top: 14px;
+        }
+        .powered-by .tech-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #94a3b8;
+            font-size: 0.65rem;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 100px;
+            background: rgba(0, 0, 0, 0.02);
+        }
+        .powered-by .tech-badge i { font-size: 0.75rem; color: #e67e22; }
+        .powered-by .tech-badge .dot { color: #27ae60; font-size: 0.35rem; }
+        .powered-by .tech-badge strong { color: #0f1724; }
+
+        .chart-wrapper { height: 200px; margin-top: 6px; }
+
+        .receipt-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .receipt-modal.active { display: flex; }
+        .receipt-content {
+            background: white;
+            border-radius: 18px;
+            max-width: 420px;
+            width: 92%;
+            padding: 28px 26px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .receipt-content .close-btn {
+            float: right;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: all 0.2s;
+            line-height: 1;
+        }
+        .receipt-content .close-btn:hover { color: #dc3545; transform: rotate(90deg); }
+        .receipt-header {
+            text-align: center;
+            border-bottom: 2px dashed #e2e8f0;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+        }
+        .receipt-header h2 { color: #1a5276; font-size: 1.2rem; }
+        .receipt-header .receipt-business {
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.6;
+        }
+        .receipt-body .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #f1f4f7;
+        }
+        .receipt-body .receipt-row.total {
+            font-weight: 700;
+            font-size: 1rem;
+            border-top: 2px solid #cbd5e1;
+            border-bottom: none;
+            padding-top: 10px;
+            margin-top: 4px;
+            color: #1a5276;
+        }
+        .receipt-footer {
+            text-align: center;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 2px dashed #e2e8f0;
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+        .btn-print {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn-print:hover { background: #1e8449; }
+
+        @media (max-width: 768px) {
+            .stats-row { grid-template-columns: repeat(3, 1fr); }
+            .grid-main { grid-template-columns: 1fr; gap: 16px; }
+        }
+        @media (max-width: 500px) {
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .store-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .brand h1 { font-size: 1.2rem; }
+            .receipt-content { padding: 20px 16px; }
+        }
+        @media (max-width: 380px) { .stats-row { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Header -->
+        <div class="store-header">
+            <div class="brand">
+                <div class="brand-icon"><i class="fas fa-store"></i></div>
+                <h1>Mutomo Chain <small>Stores</small></h1>
+            </div>
+            <div class="admin-badge">
+                <i class="fas fa-user-tie"></i>
+                <span>Sales Person</span>
+                <span class="role-tag">SALES</span>
+                <span>·</span>
+                <span id="salesName">Brian</span>
+                <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card"><div class="stat-icon orange"><i class="fas fa-shopping-cart"></i></div><div class="stat-number" id="statTotalSales">0</div><div class="stat-label">My Sales</div></div>
+            <div class="stat-card"><div class="stat-icon green"><i class="fas fa-box"></i></div><div class="stat-number" id="statTotalQty">0</div><div class="stat-label">My Quantity</div></div>
+            <div class="stat-card"><div class="stat-icon blue"><i class="fas fa-trophy"></i></div><div class="stat-number" id="statRank">#1</div><div class="stat-label">My Rank</div></div>
+            <div class="stat-card"><div class="stat-icon purple"><i class="fas fa-undo-alt"></i></div><div class="stat-number" id="statReturns">0</div><div class="stat-label">My Returns</div></div>
+            <div class="stat-card"><div class="stat-icon red"><i class="fas fa-coins"></i></div><div class="stat-number" id="statRevenue">KSh 0</div><div class="stat-label">My Revenue</div></div>
+        </div>
+
+        <!-- Grid Main -->
+        <div class="grid-main">
+            <!-- LEFT: Sales & Stock -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-cart-plus"></i> My Sales & Stock
+                    <span class="badge"><i class="far fa-clock"></i> Today</span>
+                    <span class="badge green"><i class="fas fa-lock"></i> Secured</span>
+                    <span class="badge blue"><i class="fas fa-user-tie"></i> Sales</span>
+                </div>
+                <div class="input-row">
+                    <div class="input-field"><i class="fas fa-user"></i><input type="text" id="salesPerson" placeholder="Your Name" value="Brian"></div>
+                    <div class="input-field"><i class="fas fa-route"></i><input type="text" id="route" placeholder="Route" value="CBD"></div>
+                    <div class="input-field"><i class="fas fa-calendar"></i><input type="date" id="date" value="2026-08-24"></div>
+                </div>
+                <div class="input-row">
+                    <div class="input-field"><i class="fas fa-box"></i><select id="productSelect"></select></div>
+                    <div class="input-field"><i class="fas fa-hashtag"></i><input type="number" id="quantity" placeholder="Qty" value="10" min="0" step="1"></div>
+                    <div class="input-field"><i class="fas fa-undo-alt"></i><input type="number" id="returnSold" placeholder="Return" value="0" min="0" step="1"></div>
+                    <button class="btn btn-green" id="addRowBtn"><i class="fas fa-plus"></i> Add</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Sales Person</th><th>Route</th><th>Date</th><th>Product</th><th>Qty</th><th>Return</th><th>Total</th><th style="text-align:center;">Action</th></tr></thead>
+                        <tbody id="salesBody"><tr class="empty-row"><td colspan="8"><i class="fas fa-box-open"></i> No sales records</td></tr></tbody>
+                    </table>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;">
+                    <button class="btn btn-danger" id="clearAllBtn"><i class="fas fa-trash-alt"></i> Clear All</button>
+                    <button class="btn btn-green" id="sampleDataBtn"><i class="fas fa-file-import"></i> Sample</button>
+                    <button class="btn btn-blue" id="generateReceiptBtn"><i class="fas fa-receipt"></i> Receipt</button>
+                </div>
+                <div style="margin-top:16px; border-top:1px solid #e2e8f0; padding-top:14px;">
+                    <div class="card-title" style="margin-bottom:6px;"><i class="fas fa-clipboard-list"></i> My Activity <span class="badge" id="logCount">0</span></div>
+                    <div class="progress-log" id="activityLogContainer"><div class="log-item" style="color:#94a3b8; font-style:italic; justify-content:center;">No activity yet</div></div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Sales-Only Features -->
+            <div class="card">
+                <!-- Sales Welcome -->
+                <div style="background:#f0fdf4; border:2px solid #27ae60; border-radius:12px; padding:16px; text-align:center; margin-bottom:12px;">
+                    <i class="fas fa-user-tie" style="font-size:2rem; color:#27ae60; display:block; margin-bottom:6px;"></i>
+                    <h3 style="color:#1e8449; font-size:1rem;">Welcome, Sales Team! 👋</h3>
+                    <p style="color:#64748b; font-size:0.8rem; margin-top:4px;">Track your sales and stock</p>
+                </div>
+
+                <!-- Sales Stats -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+                    <div style="background:#f8fafc; border-radius:10px; padding:12px; text-align:center; border:1px solid #e2e8f0;">
+                        <div style="font-size:0.6rem; color:#64748b; text-transform:uppercase;">Today's Sales</div>
+                        <div style="font-size:1.2rem; font-weight:700; color:#27ae60;" id="todaySales">KSh 0</div>
+                    </div>
+                    <div style="background:#f8fafc; border-radius:10px; padding:12px; text-align:center; border:1px solid #e2e8f0;">
+                        <div style="font-size:0.6rem; color:#64748b; text-transform:uppercase;">This Week</div>
+                        <div style="font-size:1.2rem; font-weight:700; color:#2e86c1;" id="weekSales">KSh 0</div>
+                    </div>
+                </div>
+
+                <!-- Sales Tips -->
+                <div style="background:#fef9e7; border:1px solid #f9e79f; border-radius:10px; padding:12px; margin-bottom:12px;">
+                    <div style="font-size:0.7rem; font-weight:600; color:#d35400; display:flex; align-items:center; gap:6px;">
+                        <i class="fas fa-lightbulb"></i> Sales Tip
+                    </div>
+                    <p style="font-size:0.75rem; color:#64748b; margin-top:4px;">Add more products to increase your sales! 🚀</p>
+                </div>
+
+                <div class="business-details-section">
+                    <div class="section-label"><i class="fas fa-building"></i> Business Details</div>
+                    <div class="detail-row"><div class="input-field"><i class="fas fa-store"></i><input type="text" id="businessName" placeholder="Business Name" value="Mutomo Chain Stores"></div></div>
+                    <div class="detail-row"><div class="input-field"><i class="fas fa-map-marker-alt"></i><input type="text" id="businessAddress" placeholder="Address" value="Nairobi, Kenya"></div></div>
+                    <div class="detail-row">
+                        <div class="input-field"><i class="fas fa-phone"></i><input type="text" id="businessPhone" placeholder="Phone" value="0700 123 456"></div>
+                        <div class="input-field"><i class="fas fa-envelope"></i><input type="text" id="businessEmail" placeholder="Email" value="info@mutomochain.com"></div>
+                    </div>
+                    <button class="btn btn-sm btn-blue" id="saveBusinessDetailsBtn" style="width:100%; justify-content:center; margin-top:4px;">
+                        <i class="fas fa-save"></i> Save Business Details
+                    </button>
+                </div>
+
+                <div class="product-management">
+                    <div class="section-label"><i class="fas fa-boxes"></i> View Products</div>
+                    <div class="product-list" id="productListContainer"></div>
+                    <div style="font-size:0.6rem; color:#94a3b8; text-align:center; margin-top:6px;">
+                        <i class="fas fa-info-circle"></i> Products managed by Admin
+                    </div>
+                </div>
+
+                <div class="self-stock-section">
+                    <div class="section-label"><i class="fas fa-hand-holding"></i> Record Your Stock Action</div>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                        <div class="input-field" style="flex:1.2; background:white;"><i class="fas fa-user"></i><select id="selfEmployeeSelect"><option value="">Select Your Name</option></select></div>
+                        <div class="input-field" style="flex:1.2; background:white;"><i class="fas fa-box"></i><select id="selfItemSelect"><option value="">Select Product</option></select></div>
+                        <div class="input-field" style="flex:0.6; background:white;"><i class="fas fa-hashtag"></i><input type="number" id="selfActionQty" value="1" min="1" step="1"></div>
+                        <button class="btn btn-orange btn-sm" id="selfTookBtn"><i class="fas fa-arrow-right"></i> Took</button>
+                        <button class="btn btn-green btn-sm" id="selfReturnedBtn"><i class="fas fa-arrow-left"></i> Return</button>
+                    </div>
+                </div>
+
+                <div style="margin-top:8px;">
+                    <div class="card-title" style="margin-bottom:4px; font-size:0.85rem;">
+                        <i class="fas fa-chart-simple"></i> My Performance
+                        <span class="badge green">Personal</span>
+                    </div>
+                    <div id="employeeProgressContainer" style="border:1px solid #e2e8f0; border-radius:10px; padding:4px 0; background:#f8fafc;">
+                        <div style="color:#94a3b8; font-style:italic; text-align:center; padding:12px;">No data yet</div>
+                    </div>
+                </div>
+
+                <div style="font-size:0.6rem; text-align:center; color:#94a3b8; background:#f8fafc; padding:4px 10px; border-radius:100px; margin-top:8px; border:1px solid #e2e8f0;">
+                    <i class="fas fa-shield-alt"></i> Secured · Sales Panel v3.0
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="card">
+            <div class="card-title"><i class="fas fa-chart-bar"></i> My Sales Overview <span class="badge green">by Product</span></div>
+            <div class="chart-wrapper"><canvas id="salesChart"></canvas></div>
+        </div>
+
+        <div class="dashboard-footer">
+            <div class="security-badge">
+                <i class="fas fa-check-circle"></i> Secured connection
+                <span class="divider">|</span>
+                <i class="fas fa-lock"></i> Encrypted
+                <span class="divider">|</span>
+                <i class="fas fa-shield-alt"></i> Protected
+            </div>
+            <div class="version">&copy; 2026 Mutomo Chain Stores · Sales Dashboard</div>
+        </div>
+        <div class="powered-by">
+            <span class="tech-badge">
+                <i class="fas fa-code"></i>
+                <span class="dot">•</span>
+                Powered by <strong>AJ Tech Company</strong>
+                <span class="dot">•</span>
+                <i class="fas fa-rocket" style="color:#e67e22;"></i>
+            </span>
+        </div>
+    </div>
+
+    <div class="receipt-modal" id="receiptModal">
+        <div class="receipt-content">
+            <span class="close-btn" id="closeReceiptBtn">&times;</span>
+            <div class="receipt-header">
+                <h2>🏪 <span id="receiptBusinessName">Mutomo Chain Stores</span></h2>
+                <div class="receipt-business">
+                    <div id="receiptBusinessAddress">📍 Nairobi, Kenya</div>
+                    <div id="receiptBusinessPhone">📞 0700 123 456</div>
+                    <div id="receiptBusinessEmail">✉️ info@mutomochain.com</div>
+                </div>
+                <p style="font-size:0.65rem; color:#94a3b8; margin-top:6px;">Receipt #<span id="receiptNumber">001</span> · <span id="receiptDate">2026-08-24</span></p>
+            </div>
+            <div class="receipt-body" id="receiptBody">
+                <div class="receipt-row" style="font-weight:600; color:#475569; border-bottom:2px solid #e2e8f0;"><span>Item</span><span>Qty</span><span>Total</span></div>
+            </div>
+            <div class="receipt-footer">
+                <p>Thank you for shopping with us!</p>
+                <p style="font-size:0.6rem;">Goods sold are not returnable</p>
+            </div>
+            <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> Print Receipt</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            "use strict";
+
+            // ===== LOGOUT =====
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                if (confirm('🚪 Logout?')) {
+                    sessionStorage.removeItem('currentUser');
+                    window.location.href = 'login.html';
+                }
+            });
+
+            // ===== DATA =====
+            const products = ['Laptop', 'Phone', 'Tablet', 'Headphones', 'Charger'];
+            const salesPersons = ['Brian', 'Cathy'];
+            const routes = ['CBD', 'Westlands'];
+
+            let salesData = [];
+            let activityLog = [];
+
+            // Populate dropdowns
+            const productSelect = document.getElementById('productSelect');
+            const selfItemSelect = document.getElementById('selfItemSelect');
+            products.forEach(p => {
+                const o1 = document.createElement('option');
+                o1.value = p;
+                o1.textContent = p;
+                productSelect.appendChild(o1);
+                const o2 = document.createElement('option');
+                o2.value = p;
+                o2.textContent = p;
+                selfItemSelect.appendChild(o2);
+            });
+
+            const selfEmpSelect = document.getElementById('selfEmployeeSelect');
+            salesPersons.forEach(p => {
+                const o = document.createElement('option');
+                o.value = p;
+                o.textContent = p;
+                selfEmpSelect.appendChild(o);
+            });
+
+            // Stats
+            function updateStats() {
+                let totalSales = 0, totalQty = 0, totalReturns = 0, totalRevenue = 0;
+                salesData.forEach(row => {
+                    totalSales++;
+                    totalQty += parseInt(row.qty) || 0;
+                    totalReturns += parseInt(row.ret) || 0;
+                    totalRevenue += parseFloat(row.total) || 0;
+                });
+                document.getElementById('statTotalSales').textContent = totalSales;
+                document.getElementById('statTotalQty').textContent = totalQty;
+                document.getElementById('statReturns').textContent = totalReturns;
+                document.getElementById('statRevenue').textContent = 'KSh ' + totalRevenue.toFixed(2);
+                document.getElementById('logCount').textContent = activityLog.length;
+                document.getElementById('todaySales').textContent = 'KSh ' + totalRevenue.toFixed(2);
+                document.getElementById('weekSales').textContent = 'KSh ' + (totalRevenue * 2.5).toFixed(2);
+            }
+
+            function renderTable() {
+                const tbody = document.getElementById('salesBody');
+                if (salesData.length === 0) {
+                    tbody.innerHTML = '<tr class="empty-row"><td colspan="8"><i class="fas fa-box-open"></i> No sales records</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = salesData.map((row, i) => `
+                    <tr>
+                        <td>${row.salesPerson}</td>
+                        <td>${row.route}</td>
+                        <td>${row.date}</td>
+                        <td>${row.product}</td>
+                        <td>${row.qty}</td>
+                        <td>${row.ret}</td>
+                        <td>KSh ${parseFloat(row.total).toFixed(2)}</td>
+                        <td style="text-align:center;">
+                            <span class="item-actions">
+                                <i class="fas fa-edit" onclick="editRow(${i})" style="cursor:pointer;color:#27ae60;"></i>
+                                <i class="fas fa-trash" onclick="deleteRow(${i})" style="cursor:pointer;color:#dc3545;"></i>
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+                updateStats();
+            }
+
+            function renderProducts() {
+                const container = document.getElementById('productListContainer');
+                if (products.length === 0) {
+                    container.innerHTML = '<div style="padding:8px;text-align:center;color:#94a3b8;font-size:0.75rem;">No products</div>';
+                    return;
+                }
+                container.innerHTML = products.map(p => `
+                    <div class="product-item">
+                        <span class="product-name"><i class="fas fa-tag" style="color:#27ae60;font-size:0.6rem;"></i> ${p}</span>
+                        <span class="product-price">KSh ${(Math.random() * 500 + 100).toFixed(2)}</span>
+                    </div>
+                `).join('');
+            }
+
+            function addLog(message) {
+                const time = new Date().toLocaleTimeString();
+                activityLog.unshift({ message, time });
+                const container = document.getElementById('activityLogContainer');
+                if (activityLog.length === 0) {
+                    container.innerHTML = '<div class="log-item" style="color:#94a3b8;font-style:italic;justify-content:center;">No activity yet</div>';
+                    return;
+                }
+                container.innerHTML = activityLog.slice(0, 10).map(log => `
+                    <div class="log-item">
+                        <span>${log.message}</span>
+                        <span style="color:#94a3b8;font-size:0.65rem;">${log.time}</span>
+                    </div>
+                `).join('');
+                document.getElementById('logCount').textContent = activityLog.length;
+            }
+
+            // Add Row
+            document.getElementById('addRowBtn').addEventListener('click', function() {
+                const salesPerson = document.getElementById('salesPerson').value || 'Brian';
+                const route = document.getElementById('route').value || 'CBD';
+                const date = document.getElementById('date').value || '2026-08-24';
+                const product = document.getElementById('productSelect').value;
+                const qty = parseInt(document.getElementById('quantity').value) || 0;
+                const ret = parseInt(document.getElementById('returnSold').value) || 0;
+                const price = Math.random() * 500 + 100;
+                const total = qty * price;
+
+                if (qty <= 0) {
+                    alert('⚠️ Quantity must be greater than 0');
+                    return;
+                }
+
+                salesData.push({ salesPerson, route, date, product, qty, ret, total });
+                renderTable();
+                addLog(`📦 ${salesPerson} added ${qty} × ${product} (KSh ${total.toFixed(2)})`);
+                updateChart();
+            });
+
+            // Delete Row
+            window.deleteRow = function(index) {
+                if (confirm('🗑️ Delete this record?')) {
+                    const row = salesData[index];
+                    salesData.splice(index, 1);
+                    renderTable();
+                    addLog(`🗑️ Deleted record for ${row.salesPerson} - ${row.product}`);
+                    updateChart();
+                }
+            };
+
+            // Edit Row
+            window.editRow = function(index) {
+                const row = salesData[index];
+                document.getElementById('salesPerson').value = row.salesPerson;
+                document.getElementById('route').value = row.route;
+                document.getElementById('date').value = row.date;
+                document.getElementById('productSelect').value = row.product;
+                document.getElementById('quantity').value = row.qty;
+                document.getElementById('returnSold').value = row.ret;
+                salesData.splice(index, 1);
+                renderTable();
+                addLog(`✏️ Editing record for ${row.salesPerson} - ${row.product}`);
+                updateChart();
+            };
+
+            // Clear All
+            document.getElementById('clearAllBtn').addEventListener('click', function() {
+                if (confirm('⚠️ Clear all sales records?')) {
+                    salesData = [];
+                    renderTable();
+                    addLog('🗑️ All records cleared');
+                    updateChart();
+                }
+            });
+
+            // Sample Data
+            document.getElementById('sampleDataBtn').addEventListener('click', function() {
+                const sampleProducts = ['Laptop', 'Phone', 'Tablet', 'Headphones'];
+                for (let i = 0; i < 5; i++) {
+                    const p = sampleProducts[i % sampleProducts.length];
+                    const price = Math.random() * 500 + 100;
+                    salesData.push({
+                        salesPerson: 'Brian',
+                        route: 'CBD',
+                        date: '2026-08-24',
+                        product: p,
+                        qty: Math.floor(Math.random() * 15) + 1,
+                        ret: Math.floor(Math.random() * 2),
+                        total: (Math.floor(Math.random() * 15) + 1) * price
+                    });
+                }
+                renderTable();
+                addLog('📊 Sample data loaded');
+                updateChart();
+            });
+
+            // Receipt
+            document.getElementById('generateReceiptBtn').addEventListener('click', function() {
+                if (salesData.length === 0) {
+                    alert('⚠️ No sales records to generate receipt!');
+                    return;
+                }
+                const receiptBody = document.getElementById('receiptBody');
+                let html = '<div class="receipt-row" style="font-weight:600;color:#475569;border-bottom:2px solid #e2e8f0;"><span>Item</span><span>Qty</span><span>Total</span></div>';
+                let grandTotal = 0;
+                salesData.forEach(row => {
+                    const total = parseFloat(row.total).toFixed(2);
+                    grandTotal += parseFloat(total);
+                    html += `<div class="receipt-row"><span>${row.product}</span><span>${row.qty}</span><span>KSh ${total}</span></div>`;
+                });
+                html += `<div class="receipt-row total"><span>TOTAL</span><span></span><span>KSh ${grandTotal.toFixed(2)}</span></div>`;
+                receiptBody.innerHTML = html;
+                document.getElementById('receiptNumber').textContent = String(Math.floor(Math.random() * 9999) + 1000).padStart(4, '0');
+                document.getElementById('receiptDate').textContent = new Date().toLocaleDateString();
+                document.getElementById('receiptModal').classList.add('active');
+            });
+
+            document.getElementById('closeReceiptBtn').addEventListener('click', function() {
+                document.getElementById('receiptModal').classList.remove('active');
+            });
+
+            // Self Stock Actions
+            document.getElementById('selfTookBtn').addEventListener('click', function() {
+                const emp = document.getElementById('selfEmployeeSelect').value;
+                const item = document.getElementById('selfItemSelect').value;
+                const qty = document.getElementById('selfActionQty').value;
+                if (!emp || !item) {
+                    alert('⚠️ Please select your name and product');
+                    return;
+                }
+                addLog(`📤 ${emp} took ${qty} × ${item} from stock`);
+                alert(`✅ ${emp} took ${qty} × ${item}`);
+            });
+
+            document.getElementById('selfReturnedBtn').addEventListener('click', function() {
+                const emp = document.getElementById('selfEmployeeSelect').value;
+                const item = document.getElementById('selfItemSelect').value;
+                const qty = document.getElementById('selfActionQty').value;
+                if (!emp || !item) {
+                    alert('⚠️ Please select your name and product');
+                    return;
+                }
+                addLog(`📥 ${emp} returned ${qty} × ${item} to stock`);
+                alert(`✅ ${emp} returned ${qty} × ${item}`);
+            });
+
+            // Save Business Details
+            document.getElementById('saveBusinessDetailsBtn').addEventListener('click', function() {
+                const name = document.getElementById('businessName').value;
+                const address = document.getElementById('businessAddress').value;
+                const phone = document.getElementById('businessPhone').value;
+                const email = document.getElementById('businessEmail').value;
+                document.getElementById('receiptBusinessName').textContent = name;
+                document.getElementById('receiptBusinessAddress').textContent = '📍 ' + address;
+                document.getElementById('receiptBusinessPhone').textContent = '📞 ' + phone;
+                document.getElementById('receiptBusinessEmail').textContent = '✉️ ' + email;
+                addLog('💾 Business details saved');
+                alert('✅ Business details saved successfully!');
+            });
+
+            // Chart
+            let chartInstance = null;
+            function updateChart() {
+                const ctx = document.getElementById('salesChart').getContext('2d');
+                if (chartInstance) { chartInstance.destroy(); }
+                const productNames = [...new Set(salesData.map(r => r.product))];
+                const productTotals = productNames.map(p => {
+                    return salesData.filter(r => r.product === p).reduce((sum, r) => sum + parseFloat(r.total), 0);
+                });
+                chartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: productNames.length ? productNames : ['No Data'],
+                        datasets: [{
+                            label: 'My Sales (KSh)',
+                            data: productNames.length ? productTotals : [0],
+                            backgroundColor: ['#27ae60', '#2ecc71', '#1abc9c', '#16a085', '#2e86c1'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { callback: function(value) { return 'KSh ' + value.toFixed(0); } }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // ===== INIT =====
+            renderTable();
+            renderProducts();
+            updateChart();
+            addLog('👋 Welcome to Sales Dashboard! Start adding your sales.');
+
+            console.log('✅ Sales Dashboard loaded');
+
+        })();
+    </script>
+
+</body>
+</html>
