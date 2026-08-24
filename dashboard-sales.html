@@ -1,13 +1,550 @@
-<script src="js/sales.js"></script>
-// ===== LOGOUT - CLEAR SESSION =====
-document.getElementById('salesLogout').addEventListener('click', function(e) {
-    e.preventDefault();
-    if (confirm('🚪 Are you sure you want to logout?')) {
-        // Clear ALL session storage
-        sessionStorage.clear();
-        // Clear local storage
-        localStorage.removeItem('mutomo_remember_username');
-        // Redirect to login
-        window.location.href = 'index.html';
-    }
-});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mutomo Chain Stores · Sales Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            background: #0a0e17;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            margin-bottom: 24px;
+        }
+        .header .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header .brand .icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00c853, #2979ff);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .header .brand h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        .header .brand h1 small {
+            display: block;
+            font-size: 0.55rem;
+            font-weight: 400;
+            color: rgba(255,255,255,0.3);
+        }
+        .header .user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header .user .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00c853, #2979ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        .header .user .info .name { font-weight: 600; font-size: 0.85rem; }
+        .header .user .info .role { font-size: 0.6rem; color: rgba(255,255,255,0.3); }
+        .header .logout-btn {
+            background: rgba(255,0,0,0.1);
+            border: 1px solid rgba(255,0,0,0.2);
+            color: rgba(255,255,255,0.4);
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.3s;
+        }
+        .header .logout-btn:hover {
+            background: rgba(255,0,0,0.2);
+            color: #ff4444;
+        }
+
+        /* ===== WELCOME ===== */
+        .welcome {
+            background: linear-gradient(135deg, rgba(41,121,255,0.1), rgba(0,200,83,0.05));
+            border: 1px solid rgba(41,121,255,0.2);
+            border-radius: 14px;
+            padding: 24px 32px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .welcome h2 { font-size: 1.4rem; font-weight: 700; }
+        .welcome h2 i { color: #2979ff; }
+        .welcome p { color: rgba(255,255,255,0.4); font-size: 0.9rem; margin-top: 4px; }
+
+        /* ===== SALES STATS ===== */
+        .sales-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-box {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+        .stat-box .num {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #2979ff;
+        }
+        .stat-box .label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.3);
+            margin-top: 4px;
+        }
+
+        /* ===== SALES FORM ===== */
+        .sales-form {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .sales-form .title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+        .sales-form .title i { color: #2979ff; margin-right: 8px; }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .form-row .field {
+            flex: 1;
+            min-width: 120px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px;
+            padding: 2px 12px 2px 14px;
+            display: flex;
+            align-items: center;
+        }
+        .form-row .field i {
+            color: rgba(255,255,255,0.2);
+            font-size: 0.8rem;
+            margin-right: 8px;
+        }
+        .form-row .field input,
+        .form-row .field select {
+            border: none;
+            background: transparent;
+            padding: 10px 4px;
+            width: 100%;
+            color: #fff;
+            outline: none;
+            font-size: 0.85rem;
+        }
+        .form-row .field select option { background: #1a1a2e; }
+        .form-row .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            background: linear-gradient(135deg, #2979ff, #00c853);
+            color: #fff;
+            transition: all 0.3s;
+        }
+        .form-row .btn:hover { opacity: 0.8; }
+
+        /* ===== TABLE ===== */
+        .table-wrap {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .table-wrap .table-header {
+            display: grid;
+            grid-template-columns: 80px 1fr 80px 80px 80px 80px;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.3);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .table-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 80px 80px 80px 80px;
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-size: 0.85rem;
+            align-items: center;
+            color: rgba(255,255,255,0.6);
+        }
+        .table-row:last-child { border-bottom: none; }
+        .table-row .product { font-weight: 500; color: #fff; }
+        .table-row .action-btn {
+            padding: 3px 10px;
+            border-radius: 4px;
+            border: none;
+            font-size: 0.6rem;
+            cursor: pointer;
+            background: rgba(41,121,255,0.15);
+            color: #2979ff;
+        }
+        .table-row .action-btn.delete { background: rgba(255,0,0,0.1); color: #ff4444; }
+
+        .empty-row {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255,255,255,0.15);
+            font-style: italic;
+        }
+
+        /* ===== ACTIVITY ===== */
+        .activity {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 20px 24px;
+        }
+        .activity .title {
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+        }
+        .activity .title i { color: #2979ff; margin-right: 8px; }
+        .activity .log-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+        }
+        .activity .log-item:last-child { border-bottom: none; }
+        .activity .log-item .time { font-size: 0.65rem; color: rgba(255,255,255,0.15); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .sales-stats { grid-template-columns: 1fr 1fr; }
+            .table-header, .table-row { grid-template-columns: 60px 1fr 60px 60px 60px 60px; font-size: 0.7rem; }
+            .header { flex-wrap: wrap; gap: 10px; }
+        }
+        @media (max-width: 500px) {
+            .sales-stats { grid-template-columns: 1fr; }
+            .form-row .field { min-width: 100%; }
+            .table-header, .table-row { grid-template-columns: 40px 1fr 40px 40px 40px 40px; font-size: 0.6rem; padding: 8px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <div class="header">
+        <div class="brand">
+            <div class="icon"><i class="fas fa-store"></i></div>
+            <h1>Mutomo Chain <small>Sales Panel</small></h1>
+        </div>
+        <div class="user">
+            <div class="info">
+                <div class="name" id="salesName">Brian</div>
+                <div class="role">💼 Sales Person</div>
+            </div>
+            <div class="avatar">B</div>
+            <button class="logout-btn" id="salesLogout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+
+    <!-- ===== WELCOME ===== -->
+    <div class="welcome">
+        <h2><i class="fas fa-hand-peace"></i> Welcome, Sales Team!</h2>
+        <p>Record your daily sales and track your performance</p>
+    </div>
+
+    <!-- ===== SALES STATS ===== -->
+    <div class="sales-stats">
+        <div class="stat-box">
+            <div class="num" id="statSales">0</div>
+            <div class="label">My Sales</div>
+        </div>
+        <div class="stat-box">
+            <div class="num" id="statQty">0</div>
+            <div class="label">Total Qty</div>
+        </div>
+        <div class="stat-box">
+            <div class="num" id="statReturns">0</div>
+            <div class="label">Returns</div>
+        </div>
+        <div class="stat-box">
+            <div class="num" id="statRevenue">KSh 0</div>
+            <div class="label">Revenue</div>
+        </div>
+    </div>
+
+    <!-- ===== SALES FORM ===== -->
+    <div class="sales-form">
+        <div class="title"><i class="fas fa-plus-circle"></i> Record Sale</div>
+        <div class="form-row">
+            <div class="field"><i class="fas fa-user"></i><input type="text" id="salesPerson" placeholder="Your Name" value="Brian"></div>
+            <div class="field"><i class="fas fa-route"></i><input type="text" id="route" placeholder="Route" value="CBD"></div>
+            <div class="field"><i class="fas fa-calendar"></i><input type="date" id="date" value="2026-08-24"></div>
+        </div>
+        <div class="form-row">
+            <div class="field"><i class="fas fa-box"></i><select id="productSelect"></select></div>
+            <div class="field"><i class="fas fa-hashtag"></i><input type="number" id="quantity" placeholder="Qty" value="10" min="0"></div>
+            <div class="field"><i class="fas fa-undo-alt"></i><input type="number" id="returnSold" placeholder="Return" value="0" min="0"></div>
+            <button class="btn" id="addSaleBtn"><i class="fas fa-plus"></i> Add</button>
+        </div>
+    </div>
+
+    <!-- ===== TABLE ===== -->
+    <div class="table-wrap">
+        <div class="table-header">
+            <span>#</span>
+            <span>Product</span>
+            <span>Qty</span>
+            <span>Return</span>
+            <span>Total</span>
+            <span>Action</span>
+        </div>
+        <div id="salesBody">
+            <div class="empty-row"><i class="fas fa-box-open"></i> No sales records yet</div>
+        </div>
+    </div>
+
+    <!-- ===== ACTIVITY ===== -->
+    <div class="activity">
+        <div class="title"><i class="fas fa-clock"></i> My Activity</div>
+        <div id="activityLog">
+            <div class="log-item" style="justify-content:center;color:rgba(255,255,255,0.1);">No activity yet</div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            "use strict";
+
+            // ============================================
+            // CHECK SESSION - Redirect if not logged in
+            // ============================================
+            const user = sessionStorage.getItem('currentUser');
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const data = JSON.parse(user);
+                if (data.role !== 'Sales') {
+                    window.location.href = 'dashboard-admin.html';
+                    return;
+                }
+                document.getElementById('salesName').textContent = data.name || 'Brian';
+                document.querySelector('.avatar').textContent = (data.name || 'B')[0];
+            } catch(e) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // ============================================
+            // LOGOUT - CLEAR ALL SESSION DATA
+            // ============================================
+            document.getElementById('salesLogout').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('🚪 Are you sure you want to logout?')) {
+                    // Clear ALL session storage
+                    sessionStorage.clear();
+                    // Clear local storage (remember me)
+                    localStorage.removeItem('mutomo_remember_username');
+                    // Redirect to login
+                    window.location.href = 'index.html';
+                }
+            });
+
+            // ============================================
+            // DATA
+            // ============================================
+            const products = ['Laptop', 'Phone', 'Tablet', 'Headphones', 'Charger', 'Smartwatch'];
+            let sales = [];
+            let activity = [];
+
+            // Populate products
+            const select = document.getElementById('productSelect');
+            products.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                select.appendChild(opt);
+            });
+
+            // ============================================
+            // FUNCTIONS
+            // ============================================
+            function updateStats() {
+                let count = 0, qty = 0, returns = 0, revenue = 0;
+                sales.forEach(row => {
+                    count++;
+                    qty += parseInt(row.qty) || 0;
+                    returns += parseInt(row.ret) || 0;
+                    revenue += parseFloat(row.total) || 0;
+                });
+                document.getElementById('statSales').textContent = count;
+                document.getElementById('statQty').textContent = qty;
+                document.getElementById('statReturns').textContent = returns;
+                document.getElementById('statRevenue').textContent = 'KSh ' + revenue.toFixed(2);
+            }
+
+            function renderTable() {
+                const body = document.getElementById('salesBody');
+                if (sales.length === 0) {
+                    body.innerHTML = '<div class="empty-row"><i class="fas fa-box-open"></i> No sales records yet</div>';
+                    return;
+                }
+                body.innerHTML = sales.map((row, i) => `
+                    <div class="table-row">
+                        <span>#${i+1}</span>
+                        <span class="product">${row.product}</span>
+                        <span>${row.qty}</span>
+                        <span>${row.ret}</span>
+                        <span>KSh ${parseFloat(row.total).toFixed(2)}</span>
+                        <span>
+                            <button class="action-btn" onclick="editSale(${i})"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn delete" onclick="deleteSale(${i})"><i class="fas fa-trash"></i></button>
+                        </span>
+                    </div>
+                `).join('');
+                updateStats();
+            }
+
+            function addLog(msg) {
+                const time = new Date().toLocaleTimeString();
+                activity.unshift({ msg, time });
+                const container = document.getElementById('activityLog');
+                if (activity.length === 0) {
+                    container.innerHTML = '<div class="log-item" style="justify-content:center;color:rgba(255,255,255,0.1);">No activity yet</div>';
+                    return;
+                }
+                container.innerHTML = activity.slice(0, 10).map(log => `
+                    <div class="log-item">
+                        <span>${log.msg}</span>
+                        <span class="time">${log.time}</span>
+                    </div>
+                `).join('');
+            }
+
+            // ============================================
+            // ADD SALE
+            // ============================================
+            document.getElementById('addSaleBtn').addEventListener('click', function() {
+                const person = document.getElementById('salesPerson').value || 'Brian';
+                const route = document.getElementById('route').value || 'CBD';
+                const date = document.getElementById('date').value || '2026-08-24';
+                const product = document.getElementById('productSelect').value;
+                const qty = parseInt(document.getElementById('quantity').value) || 0;
+                const ret = parseInt(document.getElementById('returnSold').value) || 0;
+                const price = Math.random() * 500 + 100;
+                const total = qty * price;
+
+                if (qty <= 0) {
+                    alert('⚠️ Quantity must be greater than 0');
+                    return;
+                }
+
+                sales.push({ person, route, date, product, qty, ret, total });
+                renderTable();
+                addLog(`📦 Added ${qty} × ${product} (KSh ${total.toFixed(2)})`);
+            });
+
+            // ============================================
+            // EDIT
+            // ============================================
+            window.editSale = function(index) {
+                const row = sales[index];
+                document.getElementById('productSelect').value = row.product;
+                document.getElementById('quantity').value = row.qty;
+                document.getElementById('returnSold').value = row.ret;
+                sales.splice(index, 1);
+                renderTable();
+                addLog(`✏️ Editing ${row.product}`);
+            };
+
+            // ============================================
+            // DELETE
+            // ============================================
+            window.deleteSale = function(index) {
+                if (confirm('🗑️ Delete this record?')) {
+                    const row = sales[index];
+                    sales.splice(index, 1);
+                    renderTable();
+                    addLog(`🗑️ Deleted ${row.product}`);
+                }
+            };
+
+            // ============================================
+            // SAMPLE DATA
+            // ============================================
+            function loadSample() {
+                const sample = ['Laptop', 'Phone', 'Tablet', 'Headphones'];
+                for (let i = 0; i < 4; i++) {
+                    const p = sample[i];
+                    const qty = Math.floor(Math.random() * 15) + 1;
+                    const price = Math.random() * 400 + 100;
+                    sales.push({
+                        person: 'Brian',
+                        route: 'CBD',
+                        date: '2026-08-24',
+                        product: p,
+                        qty: qty,
+                        ret: Math.floor(Math.random() * 2),
+                        total: qty * price
+                    });
+                }
+                renderTable();
+                addLog('📊 Sample data loaded');
+            }
+
+            loadSample();
+
+            console.log('💼 Sales Dashboard loaded');
+
+        })();
+    </script>
+
+</body>
+</html>
