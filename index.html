@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mutomo Chain Stores · Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #eef2f7;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(230, 126, 34, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(46, 134, 193, 0.04) 0%, transparent 40%),
+                radial-gradient(ellipse at 50% 80%, rgba(39, 174, 96, 0.03) 0%, transparent 40%);
+            animation: bgFloat 25s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes bgFloat {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            100% {
+                transform: translate(2%, -2%) rotate(2deg);
+            }
+        }
+
+        .login-wrapper {
+            max-width: 440px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 44px 40px 38px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #e67e22, #27ae60, #2e86c1);
+        }
+        .login-brand {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .login-brand .logo-wrapper {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            border-radius: 18px;
+            color: white;
+            font-size: 2rem;
+            box-shadow: 0 12px 32px rgba(230, 126, 34, 0.2);
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+        .login-brand .logo-wrapper:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 16px 40px rgba(230, 126, 34, 0.3);
+        }
+        .login-brand h1 {
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: #0f1724;
+            letter-spacing: -0.5px;
+        }
+        .login-brand h1 span {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .login-brand .tagline {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+        .role-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 12px;
+        }
+        .role-option {
+            flex: 1;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: transparent;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        .role-option:hover {
+            color: #64748b;
+        }
+        .role-option.active {
+            background: #fff;
+            color: #0f1724;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        .role-option .role-icon {
+            margin-right: 6px;
+        }
+        .role-option.active.admin-active .role-icon {
+            color: #2e86c1;
+        }
+        .role-option.active.sales-active .role-icon {
+            color: #27ae60;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+        .input-wrapper:focus-within {
+            border-color: #2e86c1;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(46, 134, 193, 0.06);
+        }
+        .input-wrapper .input-icon {
+            padding: 0 0 0 16px;
+            color: #94a3b8;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+        .input-wrapper:focus-within .input-icon {
+            color: #2e86c1;
+        }
+        .input-wrapper input {
+            border: none;
+            padding: 14px 14px 14px 12px;
+            width: 100%;
+            background: transparent;
+            outline: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #0f1724;
+        }
+        .input-wrapper input::placeholder {
+            font-weight: 400;
+            color: #94a3b8;
+        }
+        .input-wrapper .toggle-password {
+            padding: 0 16px 0 0;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .input-wrapper .toggle-password:hover {
+            color: #475569;
+        }
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .form-options .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+        .form-options .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #2e86c1;
+            cursor: pointer;
+        }
+        .form-options .forgot-link {
+            font-size: 0.85rem;
+            color: #2e86c1;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .form-options .forgot-link:hover {
+            color: #1a5276;
+            text-decoration: underline;
+        }
+        .login-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            animation: shake 0.4s;
+        }
+        .login-error.show {
+            display: flex;
+        }
+        @keyframes shake {
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+            20% {
+                transform: translateX(-8px);
+            }
+            40% {
+                transform: translateX(8px);
+            }
+            60% {
+                transform: translateX(-4px);
+            }
+            80% {
+                transform: translateX(4px);
+            }
+        }
+        .login-error i {
+            font-size: 1rem;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            background: linear-gradient(135deg, #1a5276, #2e86c1);
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(26, 82, 118, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(26, 82, 118, 0.3);
+            background: linear-gradient(135deg, #154360, #2471a3);
+        }
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .login-footer .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .login-footer .security-badge i {
+            color: #27ae60;
+        }
+        .login-footer .version {
+            color: #94a3b8;
+            font-size: 0.7rem;
+            margin-top: 8px;
+        }
+
+        .powered-by {
+            text-align: center;
+            margin-top: 16px;
+        }
+        .powered-by .tech-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #94a3b8;
+            font-size: 0.65rem;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 100px;
+            background: rgba(0, 0, 0, 0.02);
+        }
+        .powered-by .tech-badge i {
+            font-size: 0.75rem;
+            color: #e67e22;
+        }
+        .powered-by .tech-badge .dot {
+            color: #27ae60;
+            font-size: 0.35rem;
+        }
+        .powered-by .tech-badge strong {
+            color: #0f1724;
+        }
+
+        @media (max-width: 500px) {
+            .login-card {
+                padding: 32px 24px 28px;
+                border-radius: 20px;
+            }
+            .login-brand .logo-wrapper {
+                width: 64px;
+                height: 64px;
+                font-size: 1.6rem;
+            }
+            .login-brand h1 {
+                font-size: 1.5rem;
+            }
+            .role-option {
+                font-size: 0.7rem;
+                padding: 8px 10px;
+            }
+            .role-option .role-icon {
+                font-size: 0.75rem;
+            }
+            .input-wrapper input {
+                padding: 12px 12px 12px 10px;
+                font-size: 0.9rem;
+            }
+            .btn-login {
+                padding: 14px;
+                font-size: 0.95rem;
+            }
+            .form-options {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+        @media (max-width: 380px) {
+            .login-card {
+                padding: 24px 16px 20px;
+            }
+            .role-selector {
+                flex-direction: column;
+                gap: 4px;
+            }
+            .role-option {
+                padding: 10px 14px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-wrapper" id="loginWrapper">
+        <div class="login-card">
+            <div class="login-brand">
+                <div class="logo-wrapper">
+                    <i class="fas fa-store"></i>
+                </div>
+                <h1>Mutomo Chain <span>Stores</span></h1>
+                <p class="tagline">Secure Point of Sale System</p>
+            </div>
+
+            <div class="role-selector" id="roleSelector">
+                <button class="role-option active admin-active" data-role="admin" onclick="selectRole('admin')">
+                    <i class="fas fa-user-shield role-icon"></i> Administrator
+                </button>
+                <button class="role-option" data-role="sales" onclick="selectRole('sales')">
+                    <i class="fas fa-user role-icon"></i> Sales Person
+                </button>
+            </div>
+
+            <form id="loginForm" autocomplete="off">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon"><i class="fas fa-user"></i></span>
+                        <input type="text" id="loginUsername" placeholder="Enter your username" autocomplete="off" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon"><i class="fas fa-lock"></i></span>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" autocomplete="off" required>
+                        <span class="toggle-password" id="togglePassword"><i class="fas fa-eye"></i></span>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        Remember me
+                    </label>
+                    <a class="forgot-link" onclick="alert('Please contact your administrator to reset your password.')">
+                        Forgot your password?
+                    </a>
+                </div>
+
+                <div class="login-error" id="loginError">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Invalid username or password. Please try again.</span>
+                </div>
+
+                <button type="submit" class="btn-login" id="loginBtn">
+                    <span>Login</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <div class="security-badge">
+                    <i class="fas fa-check-circle"></i> Secured connection
+                    <span class="divider">|</span>
+                    <i class="fas fa-lock"></i> Encrypted
+                    <span class="divider">|</span>
+                    <i class="fas fa-shield-alt"></i> Protected
+                </div>
+                <div class="version">&copy; 2026 Mutomo Chain Stores</div>
+            </div>
+        </div>
+
+        <div class="powered-by">
+            <span class="tech-badge">
+                <i class="fas fa-code"></i>
+                <span class="dot">•</span>
+                Powered by <strong>AJ Tech Company</strong>
+                <span class="dot">•</span>
+                <i class="fas fa-rocket" style="color:#e67e22;"></i>
+            </span>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            "use strict";
+
+            const USERS = {
+                'admin': { password: 'admin123', role: 'Admin', name: 'James' },
+                'alice': { password: 'alice123', role: 'Admin', name: 'Alice' },
+                'brian': { password: 'brian123', role: 'Sales', name: 'Brian' },
+                'cathy': { password: 'cathy123', role: 'Sales', name: 'Cathy' }
+            };
+
+            let selectedRole = 'admin';
+
+            window.selectRole = function(role) {
+                selectedRole = role;
+                const options = document.querySelectorAll('.role-option');
+                options.forEach(opt => {
+                    opt.classList.remove('active', 'admin-active', 'sales-active');
+                    if (opt.dataset.role === role) {
+                        opt.classList.add('active');
+                        if (role === 'admin') opt.classList.add('admin-active');
+                        else if (role === 'sales') opt.classList.add('sales-active');
+                    }
+                });
+            };
+
+            let passwordVisible = false;
+            document.getElementById('togglePassword').addEventListener('click', function() {
+                passwordVisible = !passwordVisible;
+                const input = document.getElementById('loginPassword');
+                input.type = passwordVisible ? 'text' : 'password';
+                this.innerHTML = passwordVisible ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+            });
+
+            const rememberMe = document.getElementById('rememberMe');
+            const savedUsername = localStorage.getItem('mutomo_remember_username');
+            if (savedUsername) {
+                document.getElementById('loginUsername').value = savedUsername;
+                rememberMe.checked = true;
+            }
+
+            const loginForm = document.getElementById('loginForm');
+            const loginUsername = document.getElementById('loginUsername');
+            const loginPassword = document.getElementById('loginPassword');
+            const loginError = document.getElementById('loginError');
+
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const username = loginUsername.value.trim();
+                const password = loginPassword.value.trim();
+
+                const user = USERS[username.toLowerCase()];
+
+                if (user && user.password === password) {
+                    const userRole = user.role.toLowerCase();
+                    if (userRole !== selectedRole) {
+                        loginError.querySelector('span').textContent =
+                            `This account is not a ${selectedRole === 'admin' ? 'Administrator' : 'Sales Person'} account. Please select the correct role.`;
+                        loginError.classList.add('show');
+                        setTimeout(() => loginError.classList.remove('show'), 4000);
+                        return;
+                    }
+
+                    if (rememberMe.checked) {
+                        localStorage.setItem('mutomo_remember_username', username);
+                    } else {
+                        localStorage.removeItem('mutomo_remember_username');
+                    }
+
+                    loginError.classList.remove('show');
+                    sessionStorage.setItem('currentUser', JSON.stringify({ username, ...user }));
+                    window.location.href = 'dashboard.html';
+                } else {
+                    loginError.querySelector('span').textContent = 'Invalid username or password. Please try again.';
+                    loginError.classList.add('show');
+                    setTimeout(() => loginError.classList.remove('show'), 4000);
+                }
+            });
+
+            const storedUser = sessionStorage.getItem('currentUser');
+            if (storedUser) {
+                try {
+                    const user = JSON.parse(storedUser);
+                    window.location.href = 'dashboard.html';
+                } catch (e) {
+                    sessionStorage.removeItem('currentUser');
+                }
+            }
+
+            loginPassword.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') loginForm.dispatchEvent(new Event('submit'));
+            });
+
+            loginUsername.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') loginPassword.focus();
+            });
+
+            selectRole('admin');
+        })();
+    </script>
+
+</body>
+</html>
